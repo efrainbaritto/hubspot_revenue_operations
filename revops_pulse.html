@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>RevOps Pulse — New Clients & Expansion</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08201F;
+    --primary:0,230,118;
+    --secondary:38,215,238;
+    --indigo:165,180,252;
+    --warn:251,146,60;
+    --text-main:#E2E8F0; --text-soft:#94A3B8; --text-muted:#8FB0A8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text-main);
+    font-family:'Inter',sans-serif; padding:32px 32px 60px; min-width:320px;
+  }
+  .eyebrow{
+    font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:rgb(var(--primary)); margin:0 0 10px; position:relative; display:inline-block; padding-bottom:10px;
+  }
+  .eyebrow::after{
+    content:''; position:absolute; left:0; bottom:0; width:36px; height:2px;
+    background:linear-gradient(90deg, rgb(var(--primary)), rgb(var(--secondary)));
+  }
+  h1{
+    font-family:'Inter Tight',sans-serif; font-size:clamp(1.8rem,3vw,2.4rem); font-weight:800;
+    margin:0; letter-spacing:-.01em; color:var(--text-main);
+  }
+  h1 .accent{
+    background:linear-gradient(90deg, rgb(var(--primary)), rgb(var(--secondary)));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .topbar{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:32px; padding-bottom:24px; border-bottom:1px solid rgba(var(--primary),.15);}
+  .status{display:flex; align-items:center; gap:10px;}
+  .dot{width:8px; height:8px; border-radius:50%; background:rgb(var(--primary)); box-shadow:0 0 10px -1px rgba(var(--primary),.8); flex-shrink:0;}
+  .dot.stale{background:var(--text-muted); box-shadow:none;}
+  .status-text{font-size:13px; color:var(--text-soft);}
+  .status-text b{color:var(--text-main); font-weight:600;}
+  button.refresh{
+    background:rgba(var(--primary),.08); backdrop-filter:blur(14px); color:var(--text-main);
+    border:1px solid rgba(var(--primary),.3); border-radius:10px; padding:10px 18px;
+    font-size:13px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer;
+    display:flex; align-items:center; gap:8px; transition:all .15s;
+  }
+  button.refresh:hover{background:rgba(var(--primary),.16); border-color:rgba(var(--primary),.5);}
+  button.refresh:disabled{opacity:.5; cursor:default;}
+  .spin{animation:spin 1s linear infinite; display:inline-flex;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .card{
+    background:rgba(var(--primary),.05); backdrop-filter:blur(14px);
+    border:1px solid rgba(var(--primary),.18);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 4px 24px rgba(0,0,0,.22);
+    border-radius:16px;
+  }
+
+  .kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:16px; margin-bottom:16px;}
+  .kpi-card{padding:20px 22px;}
+  .icon-pill{
+    width:42px; height:42px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+    background:rgba(var(--pill-color,var(--primary)),.12); border:1px solid rgba(var(--pill-color,var(--primary)),.35);
+    box-shadow:0 0 18px -5px rgba(var(--pill-color,var(--primary)),.4); margin-bottom:14px;
+  }
+  .icon-pill svg{width:20px; height:20px; stroke:rgb(var(--pill-color,var(--primary)));}
+  .kpi-label{font-size:12px; color:var(--text-soft); margin:0 0 8px; font-weight:600;}
+  .kpi-value{font-family:'Inter Tight',sans-serif; font-size:34px; font-weight:800; line-height:1; margin:0 0 14px; color:var(--text-main);}
+  .kpi-value .unit{font-size:13px; color:var(--text-muted); font-family:'Inter',sans-serif; font-weight:500; margin-left:6px;}
+  .meter-track{position:relative; height:6px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden; margin-bottom:8px;}
+  .meter-fill{position:absolute; left:0; top:0; height:100%; border-radius:3px; transition:width .4s ease;}
+  .meter-ticks{display:flex; justify-content:space-between; margin-top:3px;}
+  .meter-ticks span{font-size:10px; color:var(--text-muted); font-family:'Inter',sans-serif;}
+  .kpi-sub{font-size:12px; color:var(--text-muted); margin:0;}
+
+  .delta-card{padding:22px 24px; margin-bottom:24px;}
+  .delta-card .kpi-label{margin-bottom:18px;}
+  .delta-row{display:flex; align-items:center; gap:14px; margin-bottom:12px;}
+  .delta-tag{font-size:12px; width:110px; flex-shrink:0; color:var(--text-soft); font-weight:600;}
+  .delta-bar-wrap{flex:1; height:22px; background:rgba(255,255,255,.05); border-radius:6px; overflow:hidden;}
+  .delta-bar{height:100%; border-radius:6px; display:flex; align-items:center; justify-content:flex-end; padding-right:9px;}
+  .delta-bar span{font-family:'Inter Tight',sans-serif; font-size:12px; font-weight:800; color:#08201F;}
+  .delta-note{font-size:13px; color:var(--text-soft); margin:16px 0 0; padding-top:16px; border-top:1px solid rgba(var(--primary),.15);}
+  .delta-note b{color:var(--text-main);}
+
+  .tabs{display:flex; gap:8px; margin-bottom:14px;}
+  .tab{background:transparent; border:1px solid rgba(var(--primary),.18); color:var(--text-soft); font-size:12.5px; font-weight:600; padding:8px 15px; border-radius:99px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .tab.active{background:rgba(var(--primary),.14); color:rgb(var(--primary)); border-color:rgba(var(--primary),.4);}
+
+  .table-wrap{overflow-x:auto; border-radius:16px;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  thead th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); font-weight:700; padding:12px 16px; background:rgba(255,255,255,.03); border-bottom:1px solid rgba(var(--primary),.15);}
+  tbody td{padding:11px 16px; border-bottom:1px solid rgba(var(--primary),.08); color:var(--text-main); vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(var(--primary),.04);}
+  .atag{font-size:.65rem; font-weight:700; padding:3px 9px; border-radius:99px; display:inline-block;}
+  .atag.g{background:rgba(var(--primary),.14); color:rgb(var(--primary)); border:1px solid rgba(var(--primary),.3);}
+  .atag.a{background:rgba(var(--secondary),.14); color:rgb(var(--secondary)); border:1px solid rgba(var(--secondary),.3);}
+  .atag.warn{background:rgba(var(--warn),.14); color:rgb(var(--warn)); border:1px solid rgba(var(--warn),.3);}
+  .aging-cell{font-family:'Inter Tight',sans-serif; font-weight:700;}
+  .muted-name{color:var(--text-muted);}
+
+  .section-title{font-family:'Inter Tight',sans-serif; font-size:17px; font-weight:800; margin:0 0 4px;}
+  .section-sub{font-size:12.5px; color:var(--text-muted); margin:0 0 18px;}
+  .stage-card{padding:22px 24px; margin-bottom:24px;}
+  .stage-note{
+    display:flex; gap:10px; align-items:flex-start; background:rgba(var(--indigo),.08);
+    border:1px solid rgba(var(--indigo),.25); border-radius:10px; padding:11px 14px; margin-bottom:20px;
+  }
+  .stage-note svg{stroke:rgb(var(--indigo)); flex-shrink:0; margin-top:1px;}
+  .stage-note p{margin:0; font-size:12.5px; color:var(--text-soft); line-height:1.6;}
+  .stage-note b{color:var(--text-main);}
+  .stage-row{margin-bottom:20px;}
+  .stage-row:last-child{margin-bottom:0;}
+  .stage-row-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .stage-row-head .name{font-size:13.5px; font-weight:600; color:var(--text-main);}
+  .stage-row-head .delta{font-size:12px; font-weight:600;}
+  .stage-row-head .delta.down{color:rgb(var(--primary));}
+  .stage-row-head .delta.up{color:rgb(var(--warn));}
+  .stage-row-head .delta.flat{color:var(--text-muted);}
+  .stage-bar-line{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .stage-bar-line .yr{font-size:11px; color:var(--text-muted); width:38px; flex-shrink:0; font-family:'Inter Tight',sans-serif; font-weight:700;}
+  .stage-bar-wrap{flex:1; height:16px; background:rgba(255,255,255,.05); border-radius:5px; overflow:hidden;}
+  .stage-bar{height:100%; border-radius:5px;}
+  .stage-bar-line .val{font-size:12px; color:var(--text-soft); width:100px; flex-shrink:0; font-family:'Inter Tight',sans-serif; font-weight:700; text-align:right;}
+  .seg-toggle{display:flex; gap:8px; margin-bottom:20px;}
+  .footer-note{margin-top:22px; font-size:12px; color:var(--text-muted); line-height:1.7;}
+  .activity-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; margin-bottom:24px;}
+  .activity-card{padding:22px 24px;}
+  .activity-big{font-family:'Inter Tight',sans-serif; font-size:38px; font-weight:800; line-height:1; margin:0;}
+  .activity-big .of{font-size:15px; color:var(--text-muted); font-family:'Inter',sans-serif; font-weight:500; margin-left:4px;}
+  .activity-pct{font-size:13px; font-weight:600; margin:6px 0 16px;}
+  .seg-split{display:flex; gap:16px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(var(--primary),.12);}
+  .seg-split div{flex:1;}
+  .seg-split .lbl{font-size:11px; color:var(--text-muted); margin:0 0 3px;}
+  .seg-split .num{font-size:18px; font-weight:700; font-family:'Inter Tight',sans-serif; margin:0;}
+  .threshold-row{display:flex; gap:6px; margin-bottom:16px;}
+  .threshold-btn{background:transparent; border:1px solid rgba(var(--primary),.18); color:var(--text-soft); font-size:11.5px; font-weight:600; padding:5px 12px; border-radius:99px; cursor:pointer; font-family:'Inter',sans-serif;}
+  .threshold-btn.active{background:rgba(var(--warn),.14); color:rgb(var(--warn)); border-color:rgba(var(--warn),.4);}
+  .owner-bars{margin-top:6px;}
+  .owner-row{display:flex; align-items:center; gap:10px; margin-bottom:8px;}
+  .owner-row .oname{font-size:12px; color:var(--text-soft); width:130px; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .owner-row .obar-wrap{flex:1; height:12px; background:rgba(255,255,255,.05); border-radius:4px; overflow:hidden;}
+  .owner-row .obar{height:100%; background:rgb(var(--warn)); border-radius:4px;}
+  .owner-row .ocount{font-size:12px; font-weight:700; color:var(--text-main); width:20px; text-align:right;}
+  .winrate-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:24px;}
+  .winrate-card{padding:20px 22px; text-align:center;}
+  .winrate-ring{position:relative; width:110px; height:110px; margin:0 auto 12px;}
+  .winrate-ring svg{transform:rotate(-90deg);}
+  .winrate-ring .pct{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Inter Tight',sans-serif; font-size:22px; font-weight:800;}
+  .winrate-sub{font-size:12px; color:var(--text-muted); margin:0;}
+  .funnel-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .funnel-row .fname{font-size:12px; color:var(--text-soft); width:150px; flex-shrink:0;}
+  .funnel-row .fbar-wrap{flex:1; height:18px; background:rgba(255,255,255,.05); border-radius:5px; overflow:hidden;}
+  .funnel-row .fbar{height:100%; border-radius:5px; background:rgb(var(--secondary));}
+  .funnel-row .fval{font-size:12px; font-weight:700; color:var(--text-main); width:70px; text-align:right; font-family:'Inter Tight',sans-serif;}
+  .hygiene-row{display:flex; gap:16px; flex-wrap:wrap;}
+  .hygiene-item{flex:1; min-width:160px;}
+  .hygiene-item .hnum{font-family:'Inter Tight',sans-serif; font-size:26px; font-weight:800; color:rgb(var(--warn)); margin:0;}
+  .hygiene-item .hlbl{font-size:12px; color:var(--text-muted); margin:4px 0 0;}
+  .hygiene-item.ok .hnum{color:rgb(var(--primary));}
+  .value-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:16px;}
+  .value-card{padding:18px 20px;}
+  .value-big{font-family:'Inter Tight',sans-serif; font-size:28px; font-weight:800; margin:0 0 4px;}
+  .value-sub{font-size:11.5px; color:var(--text-muted); margin:0;}
+  .month-bars{margin-top:6px;}
+  .month-row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .month-row .mname{font-size:11.5px; color:var(--text-muted); width:56px; flex-shrink:0; font-family:'Inter Tight',sans-serif; font-weight:700;}
+  .month-row .mbar-wrap{flex:1; height:16px; background:rgba(255,255,255,.05); border-radius:5px; overflow:hidden; display:flex;}
+  .month-row .mbar-new{height:100%; background:rgb(var(--primary));}
+  .month-row .mbar-exp{height:100%; background:rgb(var(--secondary));}
+  .month-row .mval{font-size:11.5px; font-weight:700; color:var(--text-main); width:90px; text-align:right; font-family:'Inter Tight',sans-serif;}
+  .legend-row{display:flex; gap:16px; margin-bottom:14px; font-size:11.5px; color:var(--text-muted);}
+  .legend-row span{display:inline-flex; align-items:center; gap:5px;}
+  .legend-dot{width:8px; height:8px; border-radius:2px; display:inline-block;}
+  .overdue-badge{font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:99px; font-family:'Inter Tight',sans-serif; display:inline-block;}
+  .overdue-badge.sev1{background:rgba(239,68,68,.15); color:#F87171;}
+  .overdue-badge.sev2{background:rgba(var(--warn),.15); color:rgb(var(--warn));}
+  .overdue-badge.sev3{background:rgba(253,224,71,.14); color:#FDE047;}
+  .meeting-kpi-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:16px;}
+  .meeting-alert{
+    display:flex; gap:10px; align-items:flex-start; background:rgba(var(--warn),.08);
+    border:1px solid rgba(var(--warn),.25); border-radius:10px; padding:11px 14px; margin-top:14px;
+  }
+  .meeting-alert svg{stroke:rgb(var(--warn)); flex-shrink:0; margin-top:1px;}
+  .meeting-alert p{margin:0; font-size:12.5px; color:var(--text-soft); line-height:1.6;}
+  .meeting-alert b{color:var(--text-main);}
+  .week-chart{display:flex; align-items:flex-end; gap:14px; height:160px; padding:10px 4px 0;}
+  .week-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;}
+  .week-bar-stack{width:100%; max-width:56px; display:flex; flex-direction:column-reverse; border-radius:6px 6px 0 0; overflow:hidden;}
+  .week-bar-completed{background:rgb(var(--primary)); width:100%;}
+  .week-bar-scheduled{background:rgb(var(--secondary)); width:100%;}
+  .week-total{font-size:13px; font-weight:700; color:var(--text-main); font-family:'Inter Tight',sans-serif; margin-bottom:6px;}
+  .week-label{font-size:11px; color:var(--text-muted); margin-top:8px; text-align:center;}
+  .activity-card{cursor:pointer; transition:border-color .15s;}
+  .activity-card:hover{border-color:rgba(var(--primary),.35);}
+  .card-head-row{display:flex; justify-content:space-between; align-items:center;}
+  .expand-chevron{width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,.05); display:flex; align-items:center; justify-content:center; transition:transform .25s;}
+  .expand-chevron svg{width:12px; height:12px; stroke:var(--text-muted);}
+  .activity-card.open .expand-chevron{transform:rotate(180deg);}
+  .detail-panel{max-height:0; overflow:hidden; transition:max-height .3s ease; cursor:default;}
+  .activity-card.open .detail-panel{max-height:560px;}
+  .detail-panel-inner{padding-top:18px; margin-top:18px; border-top:1px solid rgba(var(--primary),.15);}
+  .chip-scroll{max-height:480px; overflow-y:auto; margin:0 -4px; padding:0 4px 4px;}
+  .chip-scroll::-webkit-scrollbar{width:7px;}
+  .chip-scroll::-webkit-scrollbar-track{background:transparent;}
+  .chip-scroll::-webkit-scrollbar-thumb{background:rgba(var(--primary),.25); border-radius:10px;}
+  .chip-scroll::-webkit-scrollbar-thumb:hover{background:rgba(var(--primary),.4);}
+  .chip-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:10px; text-align:left;}
+  .deal-chip{
+    background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:12px;
+    padding:12px; display:flex; flex-direction:column; gap:6px;
+  }
+  .chip-top{display:flex; align-items:center; justify-content:space-between;}
+  .avatar{
+    width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:10.5px; font-weight:700; color:#08201F; flex-shrink:0;
+  }
+  .chip-name{font-size:12.5px; font-weight:600; color:var(--text-main); margin:0; line-height:1.3; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;}
+  .chip-owner{font-size:10.5px; color:var(--text-muted); margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .chip-days{font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:99px; align-self:flex-start; margin-top:2px;}
+  .chip-days.fresh{background:rgba(var(--primary),.15); color:rgb(var(--primary));}
+  .chip-days.stale{background:rgba(var(--warn),.15); color:rgb(var(--warn));}
+  .chip-days.dead{background:rgba(239,68,68,.15); color:#F87171;}
+  .empty-note{font-size:12.5px; color:var(--text-muted); text-align:center; padding:20px 0;}
+  .footer-note code{background:rgba(var(--primary),.1); color:var(--text-soft); padding:1px 6px; border-radius:5px; font-family:'Inter',sans-serif;}
+  .phase-tag{display:inline-block; font-size:11px; font-weight:600; padding:4px 12px; border-radius:99px; background:rgba(var(--indigo),.12); color:rgb(var(--indigo)); border:1px solid rgba(var(--indigo),.3); margin-top:12px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <p class="eyebrow">Customer Value Office</p>
+    <h1>RevOps <span class="accent">Metrics</span></h1>
+  </div>
+  <div style="display:flex; align-items:center; gap:16px;">
+    <div class="status">
+      <div class="dot" id="live-dot"></div>
+      <span class="status-text" id="status-text">Última actualización · <b>13 ago 2026</b></span>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p class="section-title">Negocios cerrados 2025</p>
+  <p class="section-sub">Aging (días entre creación y cierre) de negocios ganados y perdidos, cerrados en 2025</p>
+</div>
+
+<div class="kpi-row" id="kpi-row"></div>
+
+<div class="card delta-card">
+  <p class="kpi-label">New Client vs Expansion — aging promedio</p>
+  <div id="delta-bars"></div>
+  <p class="delta-note" id="delta-note"></p>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="card table-wrap">
+  <table>
+    <thead>
+      <tr><th>Negocio</th><th>Segmento</th><th>Resultado</th><th>Creación</th><th>Cierre</th><th>Aging</th><th>Estado</th></tr>
+    </thead>
+    <tbody id="deals-body"></tbody>
+  </table>
+</div>
+
+<div class="card stage-card" style="margin-top:16px;">
+  <p class="kpi-label">Aging: Ganado vs Perdido — 2025 (New Client / Expansion)</p>
+  <div id="won-lost-2025"></div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Negocios cerrados 2026 (parcial, ene-ago)</p>
+  <p class="section-sub">Mismo cálculo de aging, sobre los 13 negocios cerrados en lo que va de 2026 — muestra chica, leer con cuidado</p>
+</div>
+
+<div class="kpi-row" id="kpi-row-2026"></div>
+
+<div class="card delta-card">
+  <p class="kpi-label">New Client vs Expansion — aging promedio (2026)</p>
+  <div id="delta-bars-2026"></div>
+  <p class="delta-note" id="delta-note-2026"></p>
+</div>
+
+<div class="tabs" id="tabs-2026"></div>
+<div class="card table-wrap">
+  <table>
+    <thead>
+      <tr><th>Negocio</th><th>Segmento</th><th>Resultado</th><th>Creación</th><th>Cierre</th><th>Aging</th><th>Estado</th></tr>
+    </thead>
+    <tbody id="deals-body-2026"></tbody>
+  </table>
+</div>
+
+<div class="card stage-card" style="margin-top:16px;">
+  <p class="kpi-label">Aging: Ganado vs Perdido — 2026 (New Client / Expansion)</p>
+  <div id="won-lost-2026"></div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Aging 2025 vs 2026 — comparativa</p>
+  <p class="section-sub">Promedio de días para cerrar, por segmento, comparando ambos años (2026 es parcial)</p>
+</div>
+
+<div class="card stage-card">
+  <div id="aging-compare-rows"></div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Win Rate — 2025 vs 2026</p>
+  <p class="section-sub">Porcentaje de negocios cerrados ganados sobre el total de cerrados, discriminado por New Client y Expansion</p>
+</div>
+
+<p class="kpi-label" style="margin-bottom:10px;">Win rate 2025</p>
+<div class="winrate-grid">
+  <div class="card winrate-card" id="winrate-new"></div>
+  <div class="card winrate-card" id="winrate-exp"></div>
+</div>
+
+<p class="kpi-label" style="margin-bottom:10px;">Win rate 2026 (parcial, ene-ago)</p>
+<div class="winrate-grid">
+  <div class="card winrate-card" id="winrate-new-2026"></div>
+  <div class="card winrate-card" id="winrate-exp-2026"></div>
+</div>
+<div class="stage-note">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+  <p><b>Muestra chica:</b> solo 13 negocios cerrados en 2026 hasta ahora (6 New Client, 7 Expansion) — un par de negocios en cualquier dirección puede mover el % bastante. Comparar contra 2025 (38 cerrados) da más contexto que mirar el número aislado.</p>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Volumen y valor</p>
+  <p class="section-sub">Bookings y pipeline generado, últimos 12 meses (ago 2025 – jul 2026)</p>
+</div>
+
+<div class="value-grid">
+  <div class="card value-card">
+    <p class="kpi-label">Bookings 12 meses</p>
+    <p class="value-big">$786K</p>
+    <p class="value-sub">17 negocios ganados</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">Pipeline generado 12 meses</p>
+    <p class="value-big">45</p>
+    <p class="value-sub">negocios nuevos creados</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">ACV promedio — New Client</p>
+    <p class="value-big" style="color:rgb(var(--primary))">$51.5K</p>
+    <p class="value-sub">n=4 negocios con monto cargado</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">ACV promedio — Expansion</p>
+    <p class="value-big" style="color:rgb(var(--secondary))">$64.5K</p>
+    <p class="value-sub">n=9 negocios con monto cargado</p>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Bookings por mes</p>
+  <div class="legend-row">
+    <span><span class="legend-dot" style="background:rgb(var(--primary))"></span>New Client</span>
+    <span><span class="legend-dot" style="background:rgb(var(--secondary))"></span>Expansion</span>
+  </div>
+  <div class="month-bars" id="bookings-months"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Pipeline generado por mes</p>
+  <p class="section-sub" style="margin-bottom:14px;"><b style="color:var(--text-soft)">49% de los negocios creados en este período no tienen monto cargado</b> — el total en $ está subestimado</p>
+  <div class="month-bars" id="pipeline-months"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Negocios creados: 2025 vs 2026</p>
+  <p class="section-sub" style="margin-bottom:14px;">Cantidad de negocios creados por año completo (2025) vs parcial (2026, ene-ago), discriminado por New Client y Expansion</p>
+  <div id="created-year-compare"></div>
+  <div class="stage-note" style="margin-top:16px; margin-bottom:0;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p><b>Comparar en ritmo, no en total:</b> 2025 tiene 12 meses completos y 2026 solo 7.4 (ene-ago). En ritmo mensual son casi idénticos — ~4.6 negocios nuevos por mes en ambos años — aunque el total acumulado de 2026 todavía se vea menor.</p>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Pipeline generado por origen (12 meses)</p>
+  <p class="section-sub" style="margin-bottom:14px;">Origen del negocio (<code>origen_del_negocio</code>) de los 45 negocios creados en el período</p>
+  <div id="origen-rows"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Pipeline ponderado — negocios abiertos</p>
+  <p class="section-sub" style="margin-bottom:14px;">Monto × <code>hs_deal_stage_probability</code> de la etapa actual, sobre los negocios activos con monto cargado. On Hold se muestra aparte porque pondera 0%.</p>
+  <div class="value-grid" id="weighted-summary-cards" style="margin-bottom:20px;"></div>
+  <div id="weighted-stage-rows"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Negocios abiertos sin monto cargado, por responsable</p>
+  <p class="section-sub" style="margin-bottom:14px;">52 de 109 negocios abiertos (48%) no tienen <code>amount</code> cargado — el pipeline ponderado real es mayor al que se puede calcular hoy</p>
+  <div class="owner-bars" id="weighted-missing-owner-bars"></div>
+  <div class="stage-note" style="margin-top:16px; margin-bottom:0;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p><b>Falta un dato para calcular cobertura de forecast:</b> para saber si el pipeline ponderado alcanza la meta del período hace falta la cuota u objetivo de ventas — ese número no está cargado en HubSpot ni fue provisto todavía. Con una cuota definida, este panel puede mostrar directamente el % de cobertura.</p>
+  </div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Velocidad del ciclo de propuesta</p>
+  <p class="section-sub">Tiempo promedio en cada etapa, negocios agrupados por año en que entraron a cada una — 2025 completo vs 2026 (ene-ago)</p>
+</div>
+
+<div class="card stage-card">
+  <div class="stage-note">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p><b>Leer con cuidado:</b> 2026 es parcial (ene-ago) y solo cuenta negocios que ya salieron de cada etapa — los que siguen activos en una etapa aún no tienen tiempo registrado. Con muestras chicas (algunas de <b>n=1 o n=2</b>) la mejora aparente puede ser sesgo de negocios rápidos, no una tendencia real todavía.</p>
+  </div>
+  <div class="seg-toggle" id="seg-toggle"></div>
+  <div id="stage-rows"></div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Actividad comercial</p>
+  <p class="section-sub">Negocios abiertos del pipeline (109) según correos, llamadas, WhatsApp o reuniones registradas — HubSpot: <code>notes_last_updated</code> (última actividad de cualquier tipo, incluye WhatsApp/SMS logueados)</p>
+</div>
+
+<div class="activity-grid">
+  <div class="card activity-card" id="worked-card">
+    <div class="card-head-row">
+      <p class="kpi-label" style="margin:0;">Trabajados esta semana</p>
+      <div class="expand-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <p class="activity-big">20<span class="of">/ 109</span></p>
+    <p class="activity-pct" style="color:rgb(var(--primary))">18.3% del pipeline abierto tuvo actividad en los últimos 7 días</p>
+    <div class="seg-split">
+      <div><p class="lbl">New Client</p><p class="num">12</p></div>
+      <div><p class="lbl">Expansion</p><p class="num">8</p></div>
+    </div>
+    <div class="detail-panel">
+      <div class="detail-panel-inner">
+        <div class="chip-scroll"><div class="chip-grid" id="worked-chips"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card activity-card" id="zombie-card">
+    <div class="card-head-row">
+      <p class="kpi-label" style="margin:0;">Negocios zombie</p>
+      <div class="expand-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+    </div>
+    <div class="seg-toggle" id="zombie-group-toggle" style="margin-bottom:12px;"></div>
+    <div class="threshold-row" id="zombie-threshold"></div>
+    <p class="activity-big" id="zombie-count">39<span class="of">/ 63</span></p>
+    <p class="activity-pct" style="color:rgb(var(--warn))" id="zombie-pct">61.9% de los negocios en etapas abiertas (sin On Hold) sin actividad hace 30+ días</p>
+    <div class="seg-split" id="zombie-seg-split">
+      <div><p class="lbl">New Client</p><p class="num">13</p></div>
+      <div><p class="lbl">Expansion</p><p class="num">26</p></div>
+    </div>
+    <div class="detail-panel">
+      <div class="detail-panel-inner">
+        <div class="chip-scroll"><div class="chip-grid" id="zombie-chips"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card activity-card" id="meetings-link-card" style="cursor:default;">
+    <p class="kpi-label" style="margin:0;">Reuniones últimos 7 días — Deals vs Leads</p>
+    <p class="activity-big" style="margin-top:14px;">17<span class="of">reuniones</span></p>
+    <p class="activity-pct" style="color:var(--text-soft)">6 vinculadas a un Deal · 0 vinculadas a un Lead · 11 sin vínculo a Deal ni Lead</p>
+    <div class="seg-split">
+      <div><p class="lbl">Con Deal</p><p class="num" style="color:rgb(var(--primary))">6</p></div>
+      <div><p class="lbl">Con Lead</p><p class="num" style="color:rgb(var(--secondary))">0</p></div>
+      <div><p class="lbl">Sin vínculo</p><p class="num" style="color:var(--text-muted)">11</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Negocios zombie por responsable</p>
+  <p class="section-sub" id="owner-bars-caption" style="margin-bottom:14px;">Mostrando: etapas abiertas (sin On Hold) · 30+ días sin actividad</p>
+  <div class="owner-bars" id="owner-bars"></div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Negocios con fecha de cierre vencida</p>
+  <p class="section-sub">Negocios en etapas abiertas cuya <code>closedate</code> ya pasó — se excluyen los que están en On Hold (ahí una fecha vencida es esperable) y los que están en Closing & Legal (ya en cierre, no en desarrollo)</p>
+</div>
+
+<div class="card stage-card">
+  <div class="table-wrap" style="border:none; box-shadow:none; background:transparent;">
+    <table>
+      <thead>
+        <tr><th>Negocio</th><th>Empresa</th><th>Dueño</th><th>Etapa Actual</th><th>Fecha de Cierre</th><th>Vencido hace</th></tr>
+      </thead>
+      <tbody id="overdue-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Salud y calidad de pipeline</p>
+  <p class="section-sub">Ranking de actividad por vendedor, negocios abiertos por owner, funnel histórico e higiene de datos</p>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Ranking de actividad por vendedor</p>
+  <p class="section-sub" style="margin-bottom:14px;">Correos, llamadas y reuniones logueadas en negocios abiertos</p>
+  <div class="owner-bars" id="activity-owner-bars"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Negocios abiertos por propietario</p>
+  <div class="owner-bars" id="count-owner-bars"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Funnel de negocios — % del pipeline que pasó por cada etapa</p>
+  <p class="section-sub" style="margin-bottom:14px;">Sobre 206 negocios históricos del pipeline, contados por etapa actual (no acumulado/secuencial) — Cierre ganado (76) agrupa a todo lo que llegó a cierre, sin importar cuántas etapas intermedias pisó en el camino.</p>
+  <div id="funnel-rows"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Higiene de datos</p>
+  <div class="hygiene-row">
+    <div class="hygiene-item ok">
+      <p class="hnum">0 / 206</p>
+      <p class="hlbl">Negocios sin dueño asignado</p>
+    </div>
+    <div class="hygiene-item">
+      <p class="hnum">60 / 206</p>
+      <p class="hlbl">Negocios sin monto cargado</p>
+    </div>
+    <div class="hygiene-item">
+      <p class="hnum">109 / 109</p>
+      <p class="hlbl">Negocios abiertos sin "next step"</p>
+    </div>
+    <div class="hygiene-item">
+      <p class="hnum">106 / 109</p>
+      <p class="hlbl">Sin próxima actividad agendada</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Reuniones</p>
+  <p class="section-sub">Últimas 4 semanas — HubSpot: objeto Meeting, campo <code>hs_meeting_outcome</code></p>
+</div>
+
+<div class="meeting-kpi-row">
+  <div class="card value-card">
+    <p class="kpi-label">Completadas últimas 4 semanas</p>
+    <p class="value-big">42</p>
+    <p class="value-sub">promedio de 10.5 por semana</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">Programadas próxima semana</p>
+    <p class="value-big" style="color:rgb(var(--warn))">2</p>
+    <p class="value-sub">vs. ~11.8 de promedio semanal — agenda floja</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">No-shows / Canceladas</p>
+    <p class="value-big" style="color:var(--text-muted)">0</p>
+    <p class="value-sub">en 4 semanas — ver nota abajo</p>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Reuniones por semana</p>
+  <div class="legend-row">
+    <span><span class="legend-dot" style="background:rgb(var(--primary))"></span>Completadas</span>
+    <span><span class="legend-dot" style="background:rgb(var(--secondary))"></span>Programadas</span>
+  </div>
+  <div class="week-chart" id="week-chart"></div>
+  <div class="meeting-alert">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p><b>Cero no-shows y cero canceladas registradas en 4 semanas es una señal de hygiene, no necesariamente buena noticia.</b> Es probable que el equipo no esté marcando ese resultado cuando corresponde, y todo quede como "Completada" por default. Vale la pena confirmarlo con el equipo antes de leer esto como una tasa de asistencia perfecta.</p>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Reuniones completadas por vendedor (4 semanas)</p>
+  <div class="owner-bars" id="meeting-owner-bars"></div>
+</div>
+
+<div style="margin-top:36px;">
+  <p class="section-title">Leads — Pipeline Leads · Lead Generation</p>
+  <p class="section-sub">96 leads históricos en el pipeline de prospección, separado del pipeline de Deals — HubSpot objeto <code>LEAD</code></p>
+</div>
+
+<div class="meeting-kpi-row">
+  <div class="card value-card">
+    <p class="kpi-label">Leads totales</p>
+    <p class="value-big">98</p>
+    <p class="value-sub">15 leads cerrados (Disqualified/Cold) · 83 abiertos</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">Leads abiertos sin actividad 30+ días</p>
+    <p class="value-big" style="color:rgb(var(--warn))">33<span class="of" style="font-size:14px;">/ 83</span></p>
+    <p class="value-sub">estimado por fecha de última modificación del lead (no por llamada/reunión/nota logueada individualmente)</p>
+  </div>
+  <div class="card value-card">
+    <p class="kpi-label">Reuniones con Leads (últimos 7 días)</p>
+    <p class="value-big" style="color:var(--text-muted)">0</p>
+    <p class="value-sub">0 reuniones vinculadas a un Lead esta semana — ver nota abajo</p>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Distribución de leads por etapa</p>
+  <div id="leads-stage-rows"></div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Leads zombie por responsable (30+ días, etapas abiertas)</p>
+  <div class="owner-bars" id="leads-owner-bars"></div>
+</div>
+
+<div class="card stage-card">
+  <div class="stage-note">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p><b>Leer con cuidado:</b> el objeto Lead de HubSpot no expone una propiedad nativa de "última actividad" como los Deals. La actividad de cada lead se reconstruyó cruzando llamadas, reuniones y notas asociadas (<code>CALL</code>, <code>MEETING_EVENT</code>, <code>NOTE</code>); no fue posible incluir correos (<code>EMAIL</code>) por un error del lado de HubSpot al consultar esa asociación. El número real de leads trabajados podría ser algo mayor a lo que muestra este panel. Tampoco se pudieron verificar reuniones asociadas a Leads en semanas anteriores a las últimas 4-5 — la cifra de "0 reuniones con Leads esta semana" es un dato real, no un límite de la consulta.</p>
+  </div>
+</div>
+
+<div class="card stage-card">
+  <p class="kpi-label">Conversión Lead → Deal</p>
+  <p class="section-sub" style="margin-bottom:14px;">Leads con un Deal asociado directamente en HubSpot (<code>associations.DEAL</code>)</p>
+  <div class="value-grid" id="lead-to-deal-cards" style="margin-bottom:20px;"></div>
+  <div class="stage-note" style="margin-bottom:0;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+    <p><b>El cuello de botella está antes de "convertir a Deal":</b> de los 98 leads, 39 siguen en Nurturing y 11 en Awareness Meeting Executed — recién en SQL Qualification casi todos (93%) ya tienen un Deal asociado. Además, solo 3 de los 13 pares lead-deal tienen monto cargado (LLanogas $1.637 x2, Suralis $78.400), y 1 de los 13 leads es un duplicado que apunta al mismo Deal (LLanogas) que otro lead.</p>
+  </div>
+</div>
+
+<p class="footer-note">
+  Se excluyen del promedio los negocios con aging &lt; <code>60 días</code> (incluye aging negativo, señal de <code>createdate</code> inconsistente por migración de datos).
+  Segmento derivado de la propiedad <code>dealtype</code> de HubSpot.
+  <br>
+  <span class="phase-tag">Fase 1 · Prototipo — próxima fase: app en producción con roles y refresco automático</span>
+</p>
+
+<script>
+const DEFAULT_DATA = [["Promigas", "21868390229", "closedwon", "newbusiness", 1721751229693, 1767210508493], ["Edersa", "56550049649", "closedwon", "existingbusiness", 1771428118156, 1766606088011], ["Edenor - Lecturas de Control", "23118391297", "closedwon", "existingbusiness", 1727793557286, 1766087774441], ["Gas Sur - Bo Tramites", "43419922605", "closedlost", "existingbusiness", 1757101808181, 1764603650672], ["Rayogas", "30914778529", "closedlost", "newbusiness", 1734718821349, 1764353949361], ["Edenor - Provinciales Setup", "23124960402", "closedlost", "existingbusiness", 1709331257471, 1764344407271], ["EDENOR - MDM", "35183806738", "closedlost", "existingbusiness", 1742495104091, 1764344392037], ["AES ES - BO C&I", "38847589411", "closedwon", "existingbusiness", 1749138394791, 1764344218892], ["AES El Salvador Kiosk", "37973206198", "closedwon", "existingbusiness", 1748266428050, 1764344201469], ["AES ES - Not. Center", "38847597673", "closedwon", "existingbusiness", 1749138258708, 1764344178235], ["Proagas", "28978641501", "closedlost", "newbusiness", 1730734348407, 1762961487261], ["Esval", "45889610362", "closedlost", "newbusiness", 1759753248640, 1761323485912], ["Triple A", "34357597789", "closedlost", "newbusiness", 1741286720497, 1760707035776], ["Colbún | Utility Go!", "22424149281", "closedlost", "newbusiness", 1718193581132, 1760706898858], ["ENSA - Worker Zone", "23281000707", "closedwon", "existingbusiness", 1729004695190, 1760125592063], ["Costagas", "23143057412", "closedlost", "newbusiness", 1730232616799, 1760124041172], ["GasNea", "39379557964", "closedwon", "newbusiness", 1751034829196, 1759259688648], ["Colgas", "22419086450", "closedlost", "newbusiness", 1726757287929, 1758293255291], ["Abastible", "33269393586", "closedlost", "newbusiness", 1738852335719, 1756472838897], ["ENSA - Upsell Smart Customer - API + WIoT", "38745815421", "closedlost", "existingbusiness", 1749643953645, 1753705799512], ["Portal Municipio Pilar", "37918968170", "closedwon", "existingbusiness", 1748266427874, 1750351776711], ["MetroGAS Chile VideoCall", "37974433841", "closedlost", "existingbusiness", 1748266427873, 1749739967053], ["Gasco - Tier CX", "35183807159", "closedwon", "existingbusiness", 1742495307646, 1748549812204], ["AES El Salvador - Utility GO!", "23119966035", "closedwon", "existingbusiness", 1728060437976, 1748030334240], ["Camuzzi - Worker Zone - Renewal", "23296638643", "closedwon", "existingbusiness", 1729013206163, 1748022090602], ["Camuzzi | WorkerZone - Upselling", "23317808243", "closedwon", "existingbusiness", 1729013789593, 1748021882167], ["Esval", "23378436904", "closedlost", "newbusiness", 1729627761900, 1745587051864], ["Edenor - Gubernamentales Operación", "23124961294", "closedwon", "existingbusiness", 1725229474764, 1743195193332], ["Edesal", "29895262775", "closedlost", "newbusiness", 1701440309661, 1740406787433], ["Gas Sur | Utility Go!", "22547941762", "closedwon", "newbusiness", 1631219981407, 1739798527572], ["Gasco Chile Centralización Canales", "37974424381", "closedwon", "existingbusiness", 1748266427864, 1739201990287], ["Enel Chile | Utility GO! App", "20531822647", "closedlost", "newbusiness", 1718831477588, 1738010107864], ["Gasco Chile - CR Setup App", "22786370317", "closedwon", "existingbusiness", 1719841355787, 1735915714648], ["Naturgy BAN Oficina Virtual", "37974594626", "closedwon", "existingbusiness", 1748266427818, 1735745927806], ["CGE Notification Hub", "37976807194", "closedwon", "existingbusiness", 1748266427806, 1735745899619], ["Edenor Payment Gateway", "37972851368", "closedwon", "existingbusiness", 1748266427994, 1735745861656], ["AES El Salvador Oficina Virtual", "37961578640", "closedwon", "existingbusiness", 1748266427916, 1735745637428], ["Edenor Gubernamentales", "37961029281", "closedwon", "existingbusiness", 1748266427739, 1735745379624]];
+
+const DEFAULT_DATA_2026 = [["San Juan - Compensacion de Horas", "63360992861", "closedwon", "existingbusiness", 1785768408911, 1786378177356], ["Extragas", "58986286975", "closedlost", "newbusiness", 1775676441781, 1786133407010], ["VISMG - Contro de Calidad Llamadas (AI)", "60781506744", "closedlost", "newbusiness", 1778772283220, 1784317063582], ["ENSA - MVP 3", "60327816527", "closedwon", "existingbusiness", 1772544479160, 1784314357704], ["VISMG - Flujo de Venta", "60781492647", "closedlost", "newbusiness", 1779895646789, 1784032912977], ["EDENOR - AX", "38848512612", "closedwon", "existingbusiness", 1749139483105, 1783345326603], ["Edersa - Cursotmer Hub", "60781488673", "closedwon", "existingbusiness", 1772723481281, 1782130099947], ["Ejesa AI Analsis de Conversaciones", "37917121826", "closedwon", "existingbusiness", 1748266427912, 1780682834830], ["Camuzzi - Agent GO! Whatsapp", "23021814021", "closedwon", "existingbusiness", 1727704368660, 1776957569733], ["Sunclick", "42446242642", "closedwon", "newbusiness", 1755614956990, 1775670070582], ["Naturgy Matriculados", "23019649539", "closedlost", "existingbusiness", 1727703069710, 1771616624608], ["Edersa", "51831975175", "closedwon", "newbusiness", 1722522602228, 1771428102857], ["Municipio Pilar", "53393742735", "closedwon", "newbusiness", 1740831243411, 1771428094364]];
+
+const ANOMALY_THRESHOLD_DAYS = 60;
+const DAY_MS = 86400000;
+// Negocios que se fuerzan a incluir en el cálculo de aging aunque estén bajo el umbral de anomalía (60d):
+// ENSA - Upsell Smart Customer - API + WIoT, Portal Municipio Pilar (2025), San Juan - Compensacion de Horas, VISMG - Flujo de Venta (2026)
+const FORCE_INCLUDE_IDS = ['38745815421','37918968170','63360992861','60781492647'];
+
+const ICONS = {
+  clock: '<path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="9"></circle>',
+  trending: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline>',
+  repeat: '<path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path>'
+};
+
+function buildDeals(rows, year){
+  year = year || 2025;
+  return rows.map(r => {
+    const [n,i,s,t,c,l] = r;
+    const aging = (l - c) / DAY_MS;
+    return {
+      name:n, id:i, stage:s, type:t, created:c, closed:l,
+      aging: aging,
+      anomaly: aging < ANOMALY_THRESHOLD_DAYS && !FORCE_INCLUDE_IDS.includes(i),
+      segment: t === "newbusiness" ? "New Client" : "Expansion"
+    };
+  }).filter(d => d.closed >= Date.UTC(year,0,1) && d.closed <= Date.UTC(year,11,31,23,59,59));
+}
+
+function fmtDate(ms){
+  return new Date(ms).toLocaleDateString('es-AR', {day:'2-digit', month:'short', year:'numeric'});
+}
+
+function resultBadge(stage){
+  return stage === 'closedwon'
+    ? '<span class="atag g">Ganado</span>'
+    : '<span class="atag" style="background:rgba(239,68,68,.15); color:#F87171; border:1px solid rgba(239,68,68,.3);">Perdido</span>';
+}
+
+function wonLostGroups(deals){
+  const included = deals.filter(d => !d.anomaly);
+  const grp = (t,s) => included.filter(d => d.type===t && d.stage===s);
+  const stats = arr => ({ n: arr.length, avg: arr.length ? avg(arr.map(d=>d.aging)) : 0 });
+  return {
+    NewWon: stats(grp('newbusiness','closedwon')),
+    NewLost: stats(grp('newbusiness','closedlost')),
+    ExpWon: stats(grp('existingbusiness','closedwon')),
+    ExpLost: stats(grp('existingbusiness','closedlost'))
+  };
+}
+
+function renderWonLostBreakdown(containerId, data){
+  const rows = [
+    {label:'New Client', won:data.NewWon, lost:data.NewLost, color:'rgb(var(--primary))'},
+    {label:'Expansion', won:data.ExpWon, lost:data.ExpLost, color:'rgb(var(--secondary))'}
+  ];
+  const maxVal = Math.max(...rows.flatMap(r => [r.won.avg, r.lost.avg])) || 1;
+  document.getElementById(containerId).innerHTML = rows.map(r => {
+    const pctWon = r.won.n ? Math.max(4, Math.round((r.won.avg/maxVal)*100)) : 0;
+    const pctLost = r.lost.n ? Math.max(4, Math.round((r.lost.avg/maxVal)*100)) : 0;
+    return `
+      <div class="stage-row">
+        <div class="stage-row-head"><span class="name">${r.label}</span></div>
+        <div class="stage-bar-line">
+          <span class="yr" style="width:52px; color:rgb(var(--primary))">Ganado</span>
+          <div class="stage-bar-wrap">${r.won.n ? `<div class="stage-bar" style="width:${pctWon}%; background:${r.color}"></div>` : ''}</div>
+          <span class="val">${r.won.n ? Math.round(r.won.avg)+'d' : '—'} <span style="color:var(--text-muted); font-weight:500;">(n=${r.won.n})</span></span>
+        </div>
+        <div class="stage-bar-line">
+          <span class="yr" style="width:52px; color:#F87171">Perdido</span>
+          <div class="stage-bar-wrap">${r.lost.n ? `<div class="stage-bar" style="width:${pctLost}%; background:rgba(239,68,68,.55)"></div>` : ''}</div>
+          <span class="val">${r.lost.n ? Math.round(r.lost.avg)+'d' : '—'} <span style="color:var(--text-muted); font-weight:500;">(n=${r.lost.n})</span></span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function avg(arr){ return arr.reduce((a,b)=>a+b,0) / arr.length; }
+
+function computeMetrics(deals){
+  const included = deals.filter(d => !d.anomaly);
+  const excluded = deals.filter(d => d.anomaly);
+  const newBiz = included.filter(d => d.type === "newbusiness");
+  const expBiz = included.filter(d => d.type === "existingbusiness");
+  return {
+    all: deals, included, excluded,
+    overallAvg: avg(included.map(d=>d.aging)),
+    newAvg: newBiz.length ? avg(newBiz.map(d=>d.aging)) : 0,
+    expAvg: expBiz.length ? avg(expBiz.map(d=>d.aging)) : 0,
+    newCount: newBiz.length,
+    expCount: expBiz.length,
+    newTotal: deals.filter(d=>d.type==='newbusiness').length,
+    expTotal: deals.filter(d=>d.type==='existingbusiness').length
+  };
+}
+
+const OPEN_DEALS = [["Ejesa - Adicional AI Conversacional", "63361095209", "newbusiness", "Tomas Pliner", 1786542182000, 7, 0], ["Camuzzi - WZ en CH + Evolutivos", "63717540644", "existingbusiness", "Tomas Pliner", 1786620225000, 2, 0], ["Solgas", "62616633773", "newbusiness", "Pablo Garzon Duarte", 1783355998561, 2, 0], ["Light", "61507507276", "newbusiness", "Andre Medea", 1786532400000, 22, 0], ["NSJ - Capacidad Adicional", "61873024883", "existingbusiness", "Tomas Pliner", 1786623693932, 9, 0], ["Epre - CX+CH Subsidios", "61024820623", "newbusiness", "Tomas Pliner", 1780509736204, 2, 0], ["Distrigas - Worker Zone", "62121831253", "newbusiness", "Tomas Pliner", 1783339081000, 5, 0], ["Distrigas - Omnicanalidad", "62115336511", "newbusiness", "Tomas Pliner", 1783339081000, 5, 0], ["EJESA - AX Customer HUB", "60895983881", "existingbusiness", "Tomas Pliner", 1784649975012, 9, 0], ["Ejesa - Smart Customer", "60895980625", "existingbusiness", "Tomas Pliner", 1784649975012, 7, 0], ["Gases del Oriente", "60890490158", "newbusiness", "Pablo Garzon Duarte", 1783422000000, 5, 1], ["Edersa - Gestor Documental", "60640763141", "existingbusiness", "Tomas Pliner", 1786624306507, 28, 0], ["ElectroHuila", "60239732756", "newbusiness", "Pablo Garzon Duarte", 1778698800000, 1, 1], ["Smart Collections", "60786352253", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AI - Automatización NNSS", "60785669666", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["Smart Customer", "60785669559", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["LLanogas", "58630642522", "newbusiness", "Pablo Garzon Duarte", 1786532400000, 17, 0], ["Migración API EDENOR", "60785610805", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["Apolo Energies", "57178118944", "newbusiness", "Gustavo Casaforte", 1771939380000, 1, 0], ["Repsol España", "57100460906", "newbusiness", "Gustavo Casaforte", 1770988920000, 2, 0], ["Energuate | Notification Center", "59727992090", "existingbusiness", "Pablo Garzon Duarte", 1783004419096, 4, 1], ["Energuate | Anomalías", "59729838896", "existingbusiness", "Pablo Garzon Duarte", 1783076400000, 15, 1], ["Agent-GO Salto de Escalon", "60786227788", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["Gasco Chile - Whatsapp AI", "62704526240", "newbusiness", "Tomas Pliner", 1786548967000, 17, 0], ["Gasnea - WZ", "56706977085", "existingbusiness", "Tomas Pliner", 1781791220626, 14, 0], ["CGE - Sitios IA", "56707038032", "existingbusiness", "Tomas Pliner", 1786373003000, 17, 0], ["AX - Variable (outbound)", "63767771739", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (inbound)", "63813158512", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (outbound)", "63765723405", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (inbound)", "63813096487", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (outbound)", "63767833492", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (inbound)", "63813096518", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (outbound)", "63767896622", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (inbound)", "63813096631", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (outbound)", "63767834246", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["AX - Variable (inbound)", "63767834236", "existingbusiness", "Santiago Ninaus", null, 0, 0], ["Customer HUB", "60785796679", "newbusiness", "Santiago Ninaus", null, 0, 0], ["Neolux Energy", "51894035215", "newbusiness", "Gustavo Casaforte", 1772223515652, 2, 0], ["Etergy Energía", "51875275184", "newbusiness", "Gustavo Casaforte", 1782907200000, 2, 1], ["Energy Asset", "51894035462", "newbusiness", "Gustavo Casaforte", 1770030000000, 1, 1], ["Guatemel", "45894055070", "newbusiness", "Pablo Garzon Duarte", 1770289200000, 10, 1], ["Montagas", "45894050403", "newbusiness", "Pablo Garzon Duarte", 1776855600000, 2, 1], ["Copa Energia", "45758619767", "newbusiness", "Andre Medea", 1786618800000, 43, 0], ["Gasco - Not Center", "43420044908", "existingbusiness", "Tomas Pliner", 1783452955000, 53, 0], ["Adinelsa", "42824584029", "newbusiness", "Pablo Garzon Duarte", 1770057885662, 13, 1], ["Coopelesca", "41126068519", "newbusiness", "Pablo Garzon Duarte", 1773670432426, 3, 1], ["Nexus Energía", "40576523042", "newbusiness", "Gustavo Casaforte", 1771965120000, 2, 0], ["AES Dominicana", "42804874055", "newbusiness", "Pablo Garzon Duarte", 1773665287883, 11, 1], ["Aguas y Aguas de Pereira", "39506446883", "newbusiness", "Pablo Garzon Duarte", 1773670489551, 15, 1], ["Naturgy SJ - AX", "39266883487", "existingbusiness", "Tomas Pliner", 1781611200000, 20, 0], ["MG CL - SFP", "39068342100", "existingbusiness", "Tomas Pliner", 1784811768058, 71, 0], ["ENSA - Agent AI", "38816690732", "existingbusiness", "Pablo Garzon Duarte", 1786532400000, 6, 0], ["ENSA - AX Chub", "38848508296", "existingbusiness", "Pablo Garzon Duarte", 1786359600000, 85, 0], ["ENSA - SFP", "38847590987", "existingbusiness", "Tomas Pliner", 1762963217000, 38, 1], ["Metrogas AX", "39970754736", "existingbusiness", "Tomas Pliner", 1784840269000, 63, 0], ["Gasco Chile Horas Evolución", "37976797525", "existingbusiness", "Tomas Pliner", null, 0, 0], ["AES Panamá", "37492235940", "newbusiness", "Pablo Garzon Duarte", 1773670518780, 44, 1], ["Energuate", "37316202562", "newbusiness", "Pablo Garzon Duarte", 1786576965000, 152, 0], ["MetroGAS - Gestor Documental IA", "36984759933", "existingbusiness", "Tomas Pliner", 1779998435828, 5, 0], ["ANDA", "36858500965", "newbusiness", "Pablo Garzon Duarte", 1782501489034, 12, 0], ["Enel Colombia", "36267144195", "newbusiness", "Pablo Garzon Duarte", 1773668481814, 13, 1], ["Aqualia Colombia", "36286532496", "newbusiness", "Pablo Garzon Duarte", 1773670720720, 1, 1], ["EDEQ", "36267143014", "newbusiness", "Pablo Garzon Duarte", 1786446000000, 75, 0], ["Acueducto y Alcantarillado de Bogotá (EAAB)", "36267141936", "newbusiness", "Pablo Garzon Duarte", 1773668528058, 15, 1], ["CENS", "36286530479", "newbusiness", "Pablo Garzon Duarte", 1773671246517, 2, 1], ["Camuzzi OV APP", "35185500523", "existingbusiness", "Tomas Pliner", 1773749105000, 41, 1], ["Edenor - Not Center - Sender", "35183806858", "existingbusiness", "Tomas Pliner", 1770217200000, 26, 0], ["DESA - Eficiencia Energética", "33352200332", "existingbusiness", "Gustavo Casaforte", 1771506000000, 14, 1], ["Metrogas Chile - Notification Center", "33146242360", "existingbusiness", "Tomas Pliner", 1772128800000, 66, 1], ["CHEC", "30232615023", "newbusiness", "Pablo Garzon Duarte", 1786532400000, 41, 0], ["Aguas Antofagasta", "29369160877", "newbusiness", "Pablo Garzon Duarte", 1782739494601, 5, 1], ["Edelmag - Oficina Virtual", "29452745269", "existingbusiness", "Tomas Pliner", 1769526000000, 15, 0], ["CGE - OV Distribuidora", "29452745132", "existingbusiness", "Santiago Ninaus", 1769526000000, 15, 0], ["Gasco Chile - One Stop Shop APP", "29452744721", "existingbusiness", "Tomas Pliner", 1784646166945, 51, 0], ["Gasco Chile - One Stop Shop Web", "29460736284", "existingbusiness", "Tomas Pliner", 1780597800000, 77, 0], ["Emcali", "28525120592", "newbusiness", "Pablo Garzon Duarte", 1773670970783, 9, 1], ["EEGSA", "23224743497", "newbusiness", "Pablo Garzon Duarte", 1786359600000, 88, 0], ["Alcanos de Colombia", "22549221502", "newbusiness", "Pablo Garzon Duarte", 1773665783509, 30, 1], ["ENSA - Worker Zone (Change Request)", "61293146919", "existingbusiness", "Pablo Garzon Duarte", 1786374000000, 24, 0], ["ENSA - Notification Center", "23280999452", "existingbusiness", "Pablo Garzon Duarte", 1786374000000, 186, 0], ["ESSA", "22863330067", "newbusiness", "Pablo Garzon Duarte", 1774537680419, 41, 1], ["Pluz Perú", "22425752462", "newbusiness", "Pablo Garzon Duarte", 1786446000000, 17, 1], ["Naturgy NOA", "39995145555", "newbusiness", "Tomas Pliner", 1781702329000, 34, 0], ["Gasnor | Utility Go!", "22645692702", "existingbusiness", "Tomas Pliner", 1781611200000, 31, 0], ["Primax", "22418566055", "newbusiness", "Pablo Garzon Duarte", 1773671610484, 3, 1], ["Gases del Caribe", "22416953738", "newbusiness", "Pablo Garzon Duarte", 1776720362522, 12, 1], ["Efigas", "22425793148", "newbusiness", "Pablo Garzon Duarte", 1786014000000, 13, 0], ["Tropigas Panamá", "22458945331", "newbusiness", "Pablo Garzon Duarte", 1773671688911, 1, 1], ["Celsia | Utility Go!", "21425435264", "newbusiness", "Pablo Garzon Duarte", 1773671736678, 33, 1], ["EPM", "20922783287", "newbusiness", "Pablo Garzon Duarte", 1786566131000, 48, 0], ["Orygen", "20822721123", "newbusiness", "Pablo Garzon Duarte", 1770059137570, 38, 1], ["Aguas Andinas | SFP", "20710705587", "newbusiness", "Pablo Garzon Duarte", 1738234800000, 13, 1], ["Panagas | Utility GO!", "20706872888", "newbusiness", "Pablo Garzon Duarte", 1773759777256, 2, 1], ["Grupo Vanti", "22418828601", "newbusiness", "Pablo Garzon Duarte", 1773835871181, 17, 1], ["Enersa", "23111953423", "newbusiness", "Tomas Pliner", 1744812000000, 12, 1], ["Naturgy Panamá", "18572629773", "newbusiness", "Pablo Garzon Duarte", 1774300980000, 18, 1], ["Suralis", "20651902069", "newbusiness", "Tomas Pliner", 1782130722923, 14, 0], ["SAT", "29895789830", "newbusiness", "Tomas Pliner", 1756382400000, 5, 1], ["Aguas Rionegrinas", "29895263398", "newbusiness", "Tomas Pliner", 1746621000000, 4, 0], ["EDET", "29895263118", "newbusiness", "Tomas Pliner", null, 0, 1], ["Edesur", "29895262987", "newbusiness", "Tomas Pliner", null, 0, 1], ["Cálidda", "21823104340", "newbusiness", "Pablo Garzon Duarte", 1770058610990, 13, 1], ["Electrodunas - Utility GO!", "21050893394", "newbusiness", "Pablo Garzon Duarte", 1786532400000, 21, 1], ["Energía de Misiones", "29895262497", "newbusiness", "Tomas Pliner", 1733248980000, 0, 1], ["Atria", "19987360768", "newbusiness", "Pablo Garzon Duarte", 1773836281437, 3, 1], ["Luz del Sur", "21050209583", "newbusiness", "Pablo Garzon Duarte", 1785236400000, 48, 1], ["Gasco Chile | CustomerHub Postventa", "22786361432", "existingbusiness", "Tomas Pliner", 1780597800000, 56, 0], ["Gasvalpo", "23256300307", "newbusiness", "Tomas Pliner", 1773081678574, 5, 1], ["CGE Cx", "20651850394", "newbusiness", "Tomas Pliner", 1773671451203, 40, 1]];
+
+const SNAPSHOT_NOW = Date.UTC(2026,7,14);
+let zombieThreshold = 30;
+let zombieGroup = 'open'; // 'open' = etapas abiertas sin On Hold | 'onhold' = On Hold
+
+function renderActivity(){
+  const weekAgo = SNAPSHOT_NOW - 7*DAY_MS;
+  const worked = OPEN_DEALS.filter(d => d[4] !== null && d[4] >= weekAgo);
+  const workedNew = worked.filter(d => d[2]==='newbusiness').length;
+  const workedExp = worked.filter(d => d[2]==='existingbusiness').length;
+  document.querySelector('.activity-big').innerHTML = `${worked.length}<span class="of">/ ${OPEN_DEALS.length}</span>`;
+  document.querySelector('.activity-pct').textContent = `${(worked.length/OPEN_DEALS.length*100).toFixed(1)}% del pipeline abierto tuvo actividad en los últimos 7 días`;
+  const wSplit = document.querySelector('.seg-split');
+  wSplit.innerHTML = `<div><p class="lbl">New Client</p><p class="num">${workedNew}</p></div><div><p class="lbl">Expansion</p><p class="num">${workedExp}</p></div>`;
+
+  const groupDeals = OPEN_DEALS.filter(d => zombieGroup === 'onhold' ? d[6] === 1 : d[6] === 0);
+  const cutoff = SNAPSHOT_NOW - zombieThreshold*DAY_MS;
+  const zombies = groupDeals.filter(d => d[4] === null || d[4] < cutoff);
+  const zNew = zombies.filter(d => d[2]==='newbusiness').length;
+  const zExp = zombies.filter(d => d[2]==='existingbusiness').length;
+  const groupLabel = zombieGroup === 'onhold' ? 'On Hold' : 'etapas abiertas (sin On Hold)';
+  document.getElementById('zombie-count').innerHTML = `${zombies.length}<span class="of">/ ${groupDeals.length}</span>`;
+  document.getElementById('zombie-pct').textContent = groupDeals.length
+    ? `${(zombies.length/groupDeals.length*100).toFixed(1)}% de los negocios en ${groupLabel} sin actividad hace ${zombieThreshold}+ días`
+    : `Sin negocios en ${groupLabel}`;
+  document.getElementById('zombie-seg-split').innerHTML = `<div><p class="lbl">New Client</p><p class="num">${zNew}</p></div><div><p class="lbl">Expansion</p><p class="num">${zExp}</p></div>`;
+
+  const byOwner = {};
+  zombies.forEach(d => { byOwner[d[3]] = (byOwner[d[3]]||0) + 1; });
+  const sorted = Object.entries(byOwner).sort((a,b) => b[1]-a[1]);
+  const maxCount = sorted.length ? sorted[0][1] : 1;
+  document.getElementById('owner-bars').innerHTML = sorted.length ? sorted.map(([owner, count]) => `
+    <div class="owner-row">
+      <span class="oname">${owner}</span>
+      <div class="obar-wrap"><div class="obar" style="width:${Math.round((count/maxCount)*100)}%"></div></div>
+      <span class="ocount">${count}</span>
+    </div>`).join('') : '<p class="empty-note">Sin negocios zombie con este filtro</p>';
+  const caption = document.getElementById('owner-bars-caption');
+  if (caption) caption.textContent = `Mostrando: ${groupLabel} · ${zombieThreshold}+ días sin actividad`;
+
+  renderChipGrids();
+}
+
+function renderThresholdButtons(){
+  const el = document.getElementById('zombie-threshold');
+  el.innerHTML = [14,30,60].map(t => `<button class="threshold-btn ${t===zombieThreshold?'active':''}" data-t="${t}">${t}d</button>`).join('');
+  el.querySelectorAll('.threshold-btn').forEach(btn => {
+    btn.onclick = () => { zombieThreshold = parseInt(btn.dataset.t); renderThresholdButtons(); renderActivity(); };
+  });
+}
+
+function renderZombieGroupToggle(){
+  const el = document.getElementById('zombie-group-toggle');
+  const groups = [['open','Abiertos (sin On Hold)'],['onhold','On Hold']];
+  el.innerHTML = groups.map(([key,label]) => `<button class="tab ${key===zombieGroup?'active':''}" data-g="${key}">${label}</button>`).join('');
+  el.querySelectorAll('.tab').forEach(btn => {
+    btn.onclick = () => { zombieGroup = btn.dataset.g; renderZombieGroupToggle(); renderActivity(); };
+  });
+}
+
+const BOOKINGS_BY_MONTH = {"2025-08": {"count": 0, "amount": 0, "new_amt": 0, "exp_amt": 0}, "2025-09": {"count": 1, "amount": 63444, "new_amt": 63444, "exp_amt": 0}, "2025-10": {"count": 1, "amount": 58800, "new_amt": 0, "exp_amt": 58800}, "2025-11": {"count": 3, "amount": 137000, "new_amt": 0, "exp_amt": 137000}, "2025-12": {"count": 3, "amount": 234572, "new_amt": 126610, "exp_amt": 107962}, "2026-01": {"count": 0, "amount": 0, "new_amt": 0, "exp_amt": 0}, "2026-02": {"count": 2, "amount": 10000, "new_amt": 10000, "exp_amt": 0}, "2026-03": {"count": 0, "amount": 0, "new_amt": 0, "exp_amt": 0}, "2026-04": {"count": 2, "amount": 41820, "new_amt": 5820, "exp_amt": 36000}, "2026-05": {"count": 0, "amount": 0, "new_amt": 0, "exp_amt": 0}, "2026-06": {"count": 2, "amount": 192400, "new_amt": 0, "exp_amt": 192400}, "2026-07": {"count": 2, "amount": 48000, "new_amt": 0, "exp_amt": 48000}, "2026-08": {"count": 1, "amount": 0, "new_amt": 0, "exp_amt": 0}};
+const PIPELINE_BY_MONTH = {"2025-08": {"count": 2, "amount": 5820}, "2025-09": {"count": 2, "amount": 48600}, "2025-10": {"count": 4, "amount": 48084}, "2025-11": {"count": 0, "amount": 0}, "2025-12": {"count": 3, "amount": 0}, "2026-01": {"count": 4, "amount": 23000}, "2026-02": {"count": 6, "amount": 6882}, "2026-03": {"count": 3, "amount": 37400}, "2026-04": {"count": 5, "amount": 10716}, "2026-05": {"count": 4, "amount": 154700}, "2026-06": {"count": 8, "amount": 199699}, "2026-07": {"count": 3, "amount": 0}, "2026-08": {"count": 1, "amount": 0}};
+
+const PIPELINE_ORIGEN = [
+  {label:'Customer Success Relationship', n:19},
+  {label:'Eventos', n:8},
+  {label:'Lead Gen', n:6},
+  {label:'Activación & Implementación', n:3},
+  {label:'Referidos', n:3},
+  {label:'Partnerships', n:3},
+  {label:'Personal Network', n:3}
+];
+const PIPELINE_ORIGEN_TOTAL = 45;
+
+function renderPipelineOrigen(){
+  const maxN = Math.max(...PIPELINE_ORIGEN.map(s => s.n));
+  document.getElementById('origen-rows').innerHTML = PIPELINE_ORIGEN.map(s => `
+    <div class="funnel-row">
+      <span class="fname">${s.label}</span>
+      <div class="fbar-wrap"><div class="fbar" style="width:${Math.round((s.n/maxN)*100)}%; background:rgb(var(--indigo))"></div></div>
+      <span class="fval">${s.n} <span style="color:var(--text-muted); font-weight:500;">(${Math.round((s.n/PIPELINE_ORIGEN_TOTAL)*100)}%)</span></span>
+    </div>`).join('');
+}
+
+function fmtMoney(n){
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + n;
+}
+function monthLabel(key){
+  const [y,m] = key.split('-');
+  const names = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return names[parseInt(m)] + " '" + y.slice(2);
+}
+
+function renderBookingsMonths(){
+  const maxAmt = Math.max(...Object.values(BOOKINGS_BY_MONTH).map(v => v.amount));
+  document.getElementById('bookings-months').innerHTML = Object.entries(BOOKINGS_BY_MONTH).map(([key, v]) => {
+    const newPct = maxAmt ? (v.new_amt/maxAmt)*100 : 0;
+    const expPct = maxAmt ? (v.exp_amt/maxAmt)*100 : 0;
+    return `
+      <div class="month-row">
+        <span class="mname">${monthLabel(key)}</span>
+        <div class="mbar-wrap"><div class="mbar-new" style="width:${newPct}%"></div><div class="mbar-exp" style="width:${expPct}%"></div></div>
+        <span class="mval">${v.amount ? fmtMoney(v.amount) : '—'}</span>
+      </div>`;
+  }).join('');
+}
+
+const CREATED_BY_YEAR = {
+  '2025': {All:55, New:25, Expansion:30},
+  '2026': {All:34, New:15, Expansion:19}
+};
+// nota: totales sin cambios en este refresh (ver PIPELINE_BY_MONTH agosto parcial)
+
+function renderCreatedYearCompare(){
+  const rows = [
+    {label:'Total', k:'All', color:'rgb(var(--indigo))'},
+    {label:'New Client', k:'New', color:'rgb(var(--primary))'},
+    {label:'Expansion', k:'Expansion', color:'rgb(var(--secondary))'}
+  ];
+  const maxVal = Math.max(...rows.flatMap(r => [CREATED_BY_YEAR['2025'][r.k], CREATED_BY_YEAR['2026'][r.k]]));
+  document.getElementById('created-year-compare').innerHTML = rows.map(r => {
+    const v25 = CREATED_BY_YEAR['2025'][r.k];
+    const v26 = CREATED_BY_YEAR['2026'][r.k];
+    const pct25 = maxVal > 0 ? Math.max(4, Math.round((v25/maxVal)*100)) : 0;
+    const pct26 = maxVal > 0 ? Math.max(4, Math.round((v26/maxVal)*100)) : 0;
+    return `
+      <div class="stage-row">
+        <div class="stage-row-head"><span class="name">${r.label}</span></div>
+        <div class="stage-bar-line">
+          <span class="yr">2025</span>
+          <div class="stage-bar-wrap"><div class="stage-bar" style="width:${pct25}%; background:rgba(255,255,255,.35)"></div></div>
+          <span class="val">${v25}</span>
+        </div>
+        <div class="stage-bar-line">
+          <span class="yr">2026</span>
+          <div class="stage-bar-wrap"><div class="stage-bar" style="width:${pct26}%; background:${r.color}"></div></div>
+          <span class="val">${v26} <span style="color:var(--text-muted); font-weight:500;">(parcial)</span></span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderPipelineMonths(){
+  const maxCount = Math.max(...Object.values(PIPELINE_BY_MONTH).map(v => v.count));
+  document.getElementById('pipeline-months').innerHTML = Object.entries(PIPELINE_BY_MONTH).map(([key, v]) => {
+    const pct = maxCount ? (v.count/maxCount)*100 : 0;
+    return `
+      <div class="month-row">
+        <span class="mname">${monthLabel(key)}</span>
+        <div class="mbar-wrap"><div class="mbar-new" style="width:${pct}%; background:rgb(var(--indigo))"></div></div>
+        <span class="mval">${v.count} negocios</span>
+      </div>`;
+  }).join('');
+}
+
+const OVERDUE_DEALS = [
+  ["Naturgy NOA","Sin empresa asociada","Tomas Pliner","Proposal Delivered & Under Review","2025-08-14",364],
+  ["Aguas Rionegrinas","Aguas Rionegrinas","Tomas Pliner","Proposal Delivered & Under Review","2025-12-05",251],
+  ["Ejesa - Smart Customer","EJESA","Tomas Pliner","Negotiation","2026-07-07",37],
+  ["Nexus Energía","Nexus Energía","Gustavo Casaforte","Discovery","2026-07-21",23],
+  ["AI - Automatización NNSS","AES El Salvador","Santiago Ninaus","Negotiation","2026-07-31",13],
+  ["MetroGAS - Gestor Documental IA","MetroGAS","Tomas Pliner","Proposal Generation","2026-07-31",13]
+];
+
+const MEETING_WEEKS = [
+  {label:'13 jul – 19 jul', completed:8, scheduled:1},
+  {label:'20 jul – 26 jul', completed:18, scheduled:0},
+  {label:'27 jul – 2 ago', completed:6, scheduled:0},
+  {label:'3 ago – 9 ago', completed:10, scheduled:4}
+];
+const MEETING_OWNERS = [
+  ["Tomas Pliner", 17],
+  ["Pablo Garzon Duarte", 15],
+  ["Maria Camila Ospina", 5],
+  ["Gustavo Casaforte", 2],
+  ["Andre Medea", 2],
+  ["Facundo Bazzana", 1]
+];
+
+function renderMeetingWeeks(){
+  const maxVal = Math.max(...MEETING_WEEKS.map(w => w.completed + w.scheduled));
+  document.getElementById('week-chart').innerHTML = MEETING_WEEKS.map(w => {
+    const total = w.completed + w.scheduled;
+    const heightPct = maxVal ? (total/maxVal)*100 : 0;
+    const completedShare = total ? (w.completed/total)*100 : 0;
+    const scheduledShare = total ? (w.scheduled/total)*100 : 0;
+    return `
+      <div class="week-col">
+        <span class="week-total">${total}</span>
+        <div class="week-bar-stack" style="height:${heightPct}%;">
+          <div class="week-bar-completed" style="height:${completedShare}%"></div>
+          <div class="week-bar-scheduled" style="height:${scheduledShare}%"></div>
+        </div>
+        <span class="week-label">${w.label}</span>
+      </div>`;
+  }).join('');
+}
+
+function renderMeetingOwners(){
+  renderOwnerBarsGeneric('meeting-owner-bars', MEETING_OWNERS, 'rgb(var(--primary))');
+}
+
+function severityClass(days){
+  if (days > 300) return 'sev1';
+  if (days > 90) return 'sev2';
+  return 'sev3';
+}
+
+function renderOverdue(){
+  const sorted = [...OVERDUE_DEALS].sort((a,b) => b[5]-a[5]);
+  document.getElementById('overdue-body').innerHTML = sorted.map(d => {
+    const [name, company, owner, stage, closedate, days] = d;
+    return `
+      <tr>
+        <td>${name}</td>
+        <td class="muted-name">${company}</td>
+        <td>${owner}</td>
+        <td>${stage}</td>
+        <td class="aging-cell">${closedate}</td>
+        <td><span class="overdue-badge ${severityClass(days)}">${days}d</span></td>
+      </tr>`;
+  }).join('');
+}
+
+function ringSVG(pct, color){
+  const r = 46, c = 2*Math.PI*r;
+  const offset = c - (pct/100)*c;
+  return `<svg width="110" height="110" viewBox="0 0 110 110">
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"></circle>
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="${color}" stroke-width="10" stroke-dasharray="${c}" stroke-dashoffset="${offset}" stroke-linecap="round"></circle>
+  </svg>`;
+}
+
+function renderWinRate(){
+  const closedNew = DEFAULT_DATA.filter(r => r[3]==='newbusiness');
+  const closedExp = DEFAULT_DATA.filter(r => r[3]==='existingbusiness');
+  const wonNew = closedNew.filter(r => r[2]==='closedwon').length;
+  const wonExp = closedExp.filter(r => r[2]==='closedwon').length;
+  const rateNew = Math.round((wonNew/closedNew.length)*100);
+  const rateExp = Math.round((wonExp/closedExp.length)*100);
+  document.getElementById('winrate-new').innerHTML = `
+    <p class="kpi-label">Win rate — New Client</p>
+    <div class="winrate-ring">${ringSVG(rateNew, 'rgb(var(--primary))')}<div class="pct">${rateNew}%</div></div>
+    <p class="winrate-sub">${wonNew} ganados de ${closedNew.length} negocios cerrados en 2025</p>`;
+  document.getElementById('winrate-exp').innerHTML = `
+    <p class="kpi-label">Win rate — Expansion</p>
+    <div class="winrate-ring">${ringSVG(rateExp, 'rgb(var(--secondary))')}<div class="pct">${rateExp}%</div></div>
+    <p class="winrate-sub">${wonExp} ganados de ${closedExp.length} negocios cerrados en 2025</p>`;
+
+  const closedNew26 = DEFAULT_DATA_2026.filter(r => r[3]==='newbusiness');
+  const closedExp26 = DEFAULT_DATA_2026.filter(r => r[3]==='existingbusiness');
+  const wonNew26 = closedNew26.filter(r => r[2]==='closedwon').length;
+  const wonExp26 = closedExp26.filter(r => r[2]==='closedwon').length;
+  const rateNew26 = closedNew26.length ? Math.round((wonNew26/closedNew26.length)*100) : 0;
+  const rateExp26 = closedExp26.length ? Math.round((wonExp26/closedExp26.length)*100) : 0;
+  document.getElementById('winrate-new-2026').innerHTML = `
+    <p class="kpi-label">Win rate — New Client (2026)</p>
+    <div class="winrate-ring">${ringSVG(rateNew26, 'rgb(var(--primary))')}<div class="pct">${rateNew26}%</div></div>
+    <p class="winrate-sub">${wonNew26} ganados de ${closedNew26.length} negocios cerrados en 2026</p>`;
+  document.getElementById('winrate-exp-2026').innerHTML = `
+    <p class="kpi-label">Win rate — Expansion (2026)</p>
+    <div class="winrate-ring">${ringSVG(rateExp26, 'rgb(var(--secondary))')}<div class="pct">${rateExp26}%</div></div>
+    <p class="winrate-sub">${wonExp26} ganados de ${closedExp26.length} negocios cerrados en 2026</p>`;
+}
+
+function renderOwnerBarsGeneric(containerId, entries, colorVar){
+  const sorted = [...entries].sort((a,b) => b[1]-a[1]);
+  const maxCount = sorted.length ? sorted[0][1] : 1;
+  document.getElementById(containerId).innerHTML = sorted.map(([owner, count]) => `
+    <div class="owner-row">
+      <span class="oname">${owner}</span>
+      <div class="obar-wrap"><div class="obar" style="width:${Math.round((count/maxCount)*100)}%; background:${colorVar}"></div></div>
+      <span class="ocount">${count}</span>
+    </div>`).join('');
+}
+
+function renderActivityRankingAndOwnerCounts(){
+  const activityByOwner = {};
+  const countByOwner = {};
+  OPEN_DEALS.forEach(d => {
+    const owner = d[3];
+    activityByOwner[owner] = (activityByOwner[owner]||0) + (d[5]||0);
+    countByOwner[owner] = (countByOwner[owner]||0) + 1;
+  });
+  renderOwnerBarsGeneric('activity-owner-bars', Object.entries(activityByOwner), 'rgb(var(--secondary))');
+  renderOwnerBarsGeneric('count-owner-bars', Object.entries(countByOwner), 'rgb(var(--primary))');
+}
+
+const FUNNEL_DATA = [
+  {label:'Discovery', n:4},
+  {label:'Solution Validation', n:10},
+  {label:'Proposal Generation', n:7},
+  {label:'Proposal Delivered', n:14},
+  {label:'Negotiation', n:5},
+  {label:'Closing & Legal', n:23},
+  {label:'Cierre ganado', n:76}
+];
+const FUNNEL_TOTAL = 206;
+
+function renderFunnel(){
+  const maxN = Math.max(...FUNNEL_DATA.map(s => s.n));
+  document.getElementById('funnel-rows').innerHTML = FUNNEL_DATA.map(s => `
+    <div class="funnel-row">
+      <span class="fname">${s.label}</span>
+      <div class="fbar-wrap"><div class="fbar" style="width:${Math.round((s.n/maxN)*100)}%"></div></div>
+      <span class="fval">${s.n} <span style="color:var(--text-muted); font-weight:500;">(${Math.round((s.n/FUNNEL_TOTAL)*100)}%)</span></span>
+    </div>`).join('');
+}
+
+const LEADS_STAGE_DATA = [
+  {label:'Nurturing', n:39},
+  {label:'SQL Qualification', n:14},
+  {label:'Lead Qualified', n:12},
+  {label:'Awareness Meeting Executed', n:11},
+  {label:'Cold Lead', n:9},
+  {label:'Successful Contact', n:7},
+  {label:'Disqualified', n:6}
+];
+const LEADS_TOTAL = 98;
+const LEADS_ZOMBIE_OWNERS = [
+  ["Pablo Garzon Duarte", 17],
+  ["Gustavo Casaforte", 9],
+  ["Tomas Pliner", 4],
+  ["Sebastian Menis", 2],
+  ["Efrain Baritto", 1]
+];
+
+function renderLeads(){
+  const maxN = Math.max(...LEADS_STAGE_DATA.map(s => s.n));
+  document.getElementById('leads-stage-rows').innerHTML = LEADS_STAGE_DATA.map(s => `
+    <div class="funnel-row">
+      <span class="fname">${s.label}</span>
+      <div class="fbar-wrap"><div class="fbar" style="width:${Math.round((s.n/maxN)*100)}%; background:rgb(var(--secondary))"></div></div>
+      <span class="fval">${s.n} <span style="color:var(--text-muted); font-weight:500;">(${Math.round((s.n/LEADS_TOTAL)*100)}%)</span></span>
+    </div>`).join('');
+  renderOwnerBarsGeneric('leads-owner-bars', LEADS_ZOMBIE_OWNERS, 'rgb(var(--warn))');
+}
+
+const LEAD_TO_DEAL = {
+  totalLeads: 98,
+  convertedLeads: 13,
+  distinctDeals: 12,
+  sqlQualLeads: 14,
+  sqlQualConverted: 13,
+  convertedOnHold: 2
+};
+
+function renderLeadToDeal(){
+  const pct = (LEAD_TO_DEAL.convertedLeads/LEAD_TO_DEAL.totalLeads*100).toFixed(1);
+  const sqlPct = Math.round(LEAD_TO_DEAL.sqlQualConverted/LEAD_TO_DEAL.sqlQualLeads*100);
+  document.getElementById('lead-to-deal-cards').innerHTML = `
+    <div class="card value-card" style="background:rgba(255,255,255,.02); border:none;">
+      <p class="kpi-label">Conversión Lead → Deal</p>
+      <p class="value-big" style="color:rgb(var(--primary))">${pct}%</p>
+      <p class="value-sub">${LEAD_TO_DEAL.convertedLeads} de ${LEAD_TO_DEAL.totalLeads} leads generaron un Deal (${LEAD_TO_DEAL.distinctDeals} negocios distintos)</p>
+    </div>
+    <div class="card value-card" style="background:rgba(255,255,255,.02); border:none;">
+      <p class="kpi-label">SQL Qualification → Deal</p>
+      <p class="value-big" style="color:rgb(var(--secondary))">${sqlPct}%</p>
+      <p class="value-sub">${LEAD_TO_DEAL.sqlQualConverted} de ${LEAD_TO_DEAL.sqlQualLeads} leads en esa etapa ya tienen Deal — el cuello de botella está antes</p>
+    </div>
+    <div class="card value-card" style="background:rgba(255,255,255,.02); border:none;">
+      <p class="kpi-label">Deals convertidos ya On Hold</p>
+      <p class="value-big" style="color:rgb(var(--warn))">${LEAD_TO_DEAL.convertedOnHold}<span class="of">/ ${LEAD_TO_DEAL.distinctDeals}</span></p>
+      <p class="value-sub">convertir no garantiza que el negocio siga avanzando</p>
+    </div>`;
+}
+
+function fmtMoneyAuto(n){
+  if (Math.abs(n) >= 1000000) return '$' + (n/1000000).toFixed(2).replace(/\.?0+$/,'') + 'M';
+  if (Math.abs(n) >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + n;
+}
+
+const WEIGHTED_PIPELINE = {
+  activeCount: 63, activeWithAmount: 39, activeRaw: 1915060, weighted: 1350817,
+  onHoldCount: 46, onHoldAmount: 1166014,
+  openTotal: 109, missingAmount: 52
+};
+const WEIGHTED_STAGE_DATA = [
+  {label:'Discovery', prob:20, amount:36000, weighted:7200},
+  {label:'Solution Validation', prob:40, amount:371200, weighted:148480},
+  {label:'Proposal Generation', prob:60, amount:182837, weighted:109702},
+  {label:'Proposal Delivered & Under Review', prob:70, amount:484628, weighted:339240},
+  {label:'Negotiation', prob:80, amount:101607, weighted:81286},
+  {label:'Closing & Legal', prob:90, amount:738788, weighted:664909},
+  {label:'On Hold', prob:0, amount:1166014, weighted:0}
+];
+const WEIGHTED_MISSING_OWNERS = [
+  ["Pablo Garzon Duarte", 26],
+  ["Tomas Pliner", 9],
+  ["Santiago Ninaus", 8],
+  ["Gustavo Casaforte", 7],
+  ["Andre Medea", 2]
+];
+
+function renderWeightedPipeline(){
+  document.getElementById('weighted-summary-cards').innerHTML = `
+    <div class="card value-card" style="background:rgba(255,255,255,.02); border:none;">
+      <p class="kpi-label">Pipeline activo (bruto)</p>
+      <p class="value-big">${fmtMoneyAuto(WEIGHTED_PIPELINE.activeRaw)}</p>
+      <p class="value-sub">${WEIGHTED_PIPELINE.activeWithAmount} de ${WEIGHTED_PIPELINE.activeCount} negocios activos con monto cargado</p>
+    </div>
+    <div class="card value-card" style="background:rgba(255,255,255,.02); border:none;">
+      <p class="kpi-label">Pipeline ponderado</p>
+      <p class="value-big" style="color:rgb(var(--primary))">${fmtMoneyAuto(WEIGHTED_PIPELINE.weighted)}</p>
+      <p class="value-sub">${Math.round(WEIGHTED_PIPELINE.weighted/WEIGHTED_PIPELINE.activeRaw*100)}% del bruto activo</p>
+    </div>
+    <div class="card value-card" style="background:rgba(255,255,255,.02); border:none;">
+      <p class="kpi-label">On Hold (fuera de forecast)</p>
+      <p class="value-big" style="color:var(--text-muted)">${fmtMoneyAuto(WEIGHTED_PIPELINE.onHoldAmount)}</p>
+      <p class="value-sub">${WEIGHTED_PIPELINE.onHoldCount} negocios, 0% de probabilidad</p>
+    </div>`;
+
+  const maxW = Math.max(...WEIGHTED_STAGE_DATA.filter(s => s.label !== 'On Hold').map(s => s.weighted));
+  document.getElementById('weighted-stage-rows').innerHTML = WEIGHTED_STAGE_DATA.map(s => {
+    const pct = s.label === 'On Hold' ? 2 : Math.round((s.weighted/maxW)*100);
+    const color = s.label === 'On Hold' ? 'var(--text-muted)' : 'rgb(var(--indigo))';
+    return `
+    <div class="funnel-row">
+      <span class="fname">${s.label} (${s.prob}%)</span>
+      <div class="fbar-wrap"><div class="fbar" style="width:${pct}%; background:${color}"></div></div>
+      <span class="fval">${fmtMoneyAuto(s.weighted)} <span style="color:var(--text-muted); font-weight:500;">/ ${fmtMoneyAuto(s.amount)} bruto</span></span>
+    </div>`;
+  }).join('');
+
+  renderOwnerBarsGeneric('weighted-missing-owner-bars', WEIGHTED_MISSING_OWNERS, 'rgb(var(--warn))');
+}
+
+const AVATAR_COLORS = ['#00E676','#26D7EE','#A5B4FC','#FB923C','#F472B6','#FDE047'];
+function avatarColor(name){
+  let hash = 0;
+  for (let i=0;i<name.length;i++) hash = name.charCodeAt(i) + ((hash<<5)-hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+function initials(name){
+  return name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
+function relativeDays(ms){
+  if (ms === null) return null;
+  return Math.floor((SNAPSHOT_NOW - ms) / DAY_MS);
+}
+function segLabel(type){ return type === 'newbusiness' ? 'New' : 'Exp'; }
+
+function buildChip(deal, mode){
+  const [name, id, type, owner, lastContact] = deal;
+  const days = relativeDays(lastContact);
+  let daysHtml, daysClass;
+  if (mode === 'worked') {
+    daysHtml = days === 0 ? 'hoy' : `hace ${days}d`;
+    daysClass = 'fresh';
+  } else {
+    if (lastContact === null) { daysHtml = 'nunca contactado'; daysClass = 'dead'; }
+    else { daysHtml = `hace ${days}d`; daysClass = days > 60 ? 'dead' : 'stale'; }
+  }
+  return `
+    <div class="deal-chip">
+      <div class="chip-top">
+        <span class="avatar" style="background:${avatarColor(owner)}">${initials(owner)}</span>
+        <span class="atag ${type==='newbusiness'?'g':'a'}" style="font-size:.6rem;">${segLabel(type)}</span>
+      </div>
+      <p class="chip-name">${name}</p>
+      <p class="chip-owner">${owner}</p>
+      <span class="chip-days ${daysClass}">${daysHtml}</span>
+    </div>`;
+}
+
+function renderChipGrids(){
+  const weekAgo = SNAPSHOT_NOW - 7*DAY_MS;
+  const worked = OPEN_DEALS.filter(d => d[4] !== null && d[4] >= weekAgo).sort((a,b) => b[4]-a[4]);
+  document.getElementById('worked-chips').innerHTML = worked.length
+    ? worked.map(d => buildChip(d, 'worked')).join('')
+    : '<p class="empty-note">Sin negocios trabajados en los últimos 7 días</p>';
+
+  const groupDeals = OPEN_DEALS.filter(d => zombieGroup === 'onhold' ? d[6] === 1 : d[6] === 0);
+  const cutoff = SNAPSHOT_NOW - zombieThreshold*DAY_MS;
+  const zombies = groupDeals.filter(d => d[4] === null || d[4] < cutoff)
+    .sort((a,b) => (a[4]===null?-1:a[4]) - (b[4]===null?-1:b[4]));
+  document.getElementById('zombie-chips').innerHTML = zombies.length
+    ? zombies.map(d => buildChip(d, 'zombie')).join('')
+    : '<p class="empty-note">Sin negocios zombie con este filtro</p>';
+}
+
+function setupCardToggles(){
+  ['worked-card','zombie-card'].forEach(id => {
+    const card = document.getElementById(id);
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.threshold-btn')) return;
+      card.classList.toggle('open');
+    });
+  });
+}
+
+let currentDeals = buildDeals(DEFAULT_DATA);
+let currentFilter = 'included';
+
+const STAGE_DATA = {
+  "SV":  {"label":"Solution Validation",            "2025":{"All":{"n":12,"avg":40.4},"New":{"n":12,"avg":40.4},"Expansion":{"n":0,"avg":null}}, "2026":{"All":{"n":17,"avg":49.1},"New":{"n":8,"avg":25.2},"Expansion":{"n":9,"avg":70.4}}},
+  "PG":  {"label":"Proposal Generation",           "2025":{"All":{"n":21,"avg":62.1},"New":{"n":20,"avg":65.2},"Expansion":{"n":1,"avg":0.0}},  "2026":{"All":{"n":20,"avg":26.6},"New":{"n":9,"avg":24.3},"Expansion":{"n":11,"avg":28.5}}},
+  "PD":  {"label":"Proposal Delivered & Under Review","2025":{"All":{"n":14,"avg":56.6},"New":{"n":14,"avg":56.6},"Expansion":{"n":0,"avg":null}},"2026":{"All":{"n":14,"avg":-8.0},"New":{"n":5,"avg":9.3},"Expansion":{"n":9,"avg":-17.6}}},
+  "NEG": {"label":"Negotiation",                    "2025":{"All":{"n":8,"avg":36.4},"New":{"n":8,"avg":36.4},"Expansion":{"n":0,"avg":null}},   "2026":{"All":{"n":7,"avg":22.7},"New":{"n":3,"avg":21.0},"Expansion":{"n":4,"avg":23.9}}},
+  "CL":  {"label":"Closing & Legal",                "2025":{"All":{"n":7,"avg":54.9},"New":{"n":7,"avg":54.9},"Expansion":{"n":0,"avg":null}},   "2026":{"All":{"n":7,"avg":35.5},"New":{"n":2,"avg":68.6},"Expansion":{"n":5,"avg":22.3}}}
+};
+let currentStageSeg = 'All';
+
+function renderStageSegToggle(){
+  const el = document.getElementById('seg-toggle');
+  el.innerHTML = ['All','New','Expansion'].map(seg => {
+    const label = seg === 'All' ? 'Todos' : (seg === 'New' ? 'New Client' : 'Expansion');
+    return `<button class="tab ${seg===currentStageSeg?'active':''}" data-seg="${seg}">${label}</button>`;
+  }).join('');
+  el.querySelectorAll('.tab').forEach(btn => {
+    btn.onclick = () => { currentStageSeg = btn.dataset.seg; renderStageSegToggle(); renderStageRows(); };
+  });
+}
+
+function renderStageRows(){
+  const maxVal = Math.max(...Object.values(STAGE_DATA).flatMap(s => ['2025','2026'].map(y => (s[y][currentStageSeg]||{}).avg || 0)));
+  const container = document.getElementById('stage-rows');
+  container.innerHTML = Object.entries(STAGE_DATA).map(([key, stage]) => {
+    const d25 = stage['2025'][currentStageSeg];
+    const d26 = stage['2026'][currentStageSeg];
+    const has25 = d25 && d25.n > 0;
+    const has26 = d26 && d26.n > 0;
+    let deltaHtml = '';
+    if (has25 && has26) {
+      const delta = d26.avg - d25.avg;
+      const cls = delta < -2 ? 'down' : (delta > 2 ? 'up' : 'flat');
+      const arrow = delta < -2 ? '↓' : (delta > 2 ? '↑' : '→');
+      deltaHtml = `<span class="delta ${cls}">${arrow} ${Math.abs(Math.round(delta))}d</span>`;
+    }
+    const bar = (d, color) => {
+      if (!d || d.n === 0) return `
+        <div class="stage-bar-line">
+          <span class="yr">${''}</span>
+          <div class="stage-bar-wrap"></div>
+          <span class="val" style="color:var(--text-muted)">sin datos</span>
+        </div>`;
+      const pct = maxVal > 0 ? Math.max(4, Math.round((d.avg/maxVal)*100)) : 0;
+      return `
+        <div class="stage-bar-line">
+          <span class="yr">${''}</span>
+          <div class="stage-bar-wrap"><div class="stage-bar" style="width:${pct}%; background:${color}"></div></div>
+          <span class="val">${Math.round(d.avg)}d <span style="color:var(--text-muted); font-weight:500;">(n=${d.n})</span></span>
+        </div>`;
+    };
+    return `
+      <div class="stage-row">
+        <div class="stage-row-head">
+          <span class="name">${stage.label}</span>
+          ${deltaHtml}
+        </div>
+        ${bar({...d25, label:'2025'}, 'rgba(255,255,255,.35)').replace('<span class="yr"></span>','<span class="yr">2025</span>')}
+        ${bar({...d26, label:'2026'}, 'rgb(var(--primary))').replace('<span class="yr"></span>','<span class="yr">2026</span>')}
+      </div>`;
+  }).join('');
+}
+
+function renderKPIs(m, prefix){
+  prefix = prefix || '';
+  const maxScale = 500;
+  const pct = v => Math.min(100, Math.round((v/maxScale)*100));
+  const row = document.getElementById('kpi-row'+prefix);
+  row.innerHTML = `
+    <div class="card kpi-card">
+      <div class="icon-pill" style="--pill-color:var(--indigo)"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">${ICONS.clock}</svg></div>
+      <p class="kpi-label">Aging promedio general</p>
+      <p class="kpi-value">${Math.round(m.overallAvg)}<span class="unit">días</span></p>
+      <div class="meter-track"><div class="meter-fill" style="width:${pct(m.overallAvg)}%; background:rgb(var(--indigo))"></div></div>
+      <div class="meter-ticks"><span>0</span><span>250</span><span>500+</span></div>
+      <p class="kpi-sub">${m.included.length} de ${m.all.length} negocios · ${m.excluded.length} excluidos</p>
+    </div>
+    <div class="card kpi-card">
+      <div class="icon-pill" style="--pill-color:var(--primary)"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">${ICONS.trending}</svg></div>
+      <p class="kpi-label">New Client</p>
+      <p class="kpi-value">${Math.round(m.newAvg)}<span class="unit">días</span></p>
+      <div class="meter-track"><div class="meter-fill" style="width:${pct(m.newAvg)}%; background:rgb(var(--primary))"></div></div>
+      <div class="meter-ticks"><span>0</span><span>250</span><span>500+</span></div>
+      <p class="kpi-sub">${m.newCount} de ${m.newTotal} negocios en el cálculo</p>
+    </div>
+    <div class="card kpi-card">
+      <div class="icon-pill" style="--pill-color:var(--secondary)"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">${ICONS.repeat}</svg></div>
+      <p class="kpi-label">Expansion</p>
+      <p class="kpi-value">${Math.round(m.expAvg)}<span class="unit">días</span></p>
+      <div class="meter-track"><div class="meter-fill" style="width:${pct(m.expAvg)}%; background:rgb(var(--secondary))"></div></div>
+      <div class="meter-ticks"><span>0</span><span>250</span><span>500+</span></div>
+      <p class="kpi-sub">${m.expCount} de ${m.expTotal} negocios en el cálculo</p>
+    </div>
+  `;
+}
+
+function renderDelta(m, prefix){
+  prefix = prefix || '';
+  const maxScale = Math.max(m.newAvg, m.expAvg) * 1.15;
+  const pctOf = v => Math.round((v/maxScale)*100);
+  document.getElementById('delta-bars'+prefix).innerHTML = `
+    <div class="delta-row">
+      <span class="delta-tag">New Client</span>
+      <div class="delta-bar-wrap"><div class="delta-bar" style="width:${pctOf(m.newAvg)}%; background:rgb(var(--primary))"><span>${Math.round(m.newAvg)}d</span></div></div>
+    </div>
+    <div class="delta-row">
+      <span class="delta-tag">Expansion</span>
+      <div class="delta-bar-wrap"><div class="delta-bar" style="width:${pctOf(m.expAvg)}%; background:rgb(var(--secondary))"><span>${Math.round(m.expAvg)}d</span></div></div>
+    </div>
+  `;
+  const delta = m.newAvg - m.expAvg;
+  const pctDelta = m.expAvg ? Math.round((delta/m.expAvg)*100) : 0;
+  document.getElementById('delta-note'+prefix).innerHTML =
+    `Captar un nuevo cliente tarda <b>${Math.round(Math.abs(delta))} días ${delta>=0?'más':'menos'}</b> en cerrar que expandir uno existente (<b>${Math.abs(pctDelta)}%</b>).`;
+}
+
+function renderTabs(m){
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = `
+    <button class="tab" data-f="included">Incluidos (${m.included.length})</button>
+    <button class="tab" data-f="excluded">Excluidos — anomalías (${m.excluded.length})</button>
+    <button class="tab" data-f="all">Todos (${m.all.length})</button>
+  `;
+  tabs.querySelectorAll('.tab').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.f === currentFilter);
+    btn.onclick = () => { currentFilter = btn.dataset.f; renderAll(computeMetrics(currentDeals)); };
+  });
+}
+
+function renderTable(m){
+  const rows = currentFilter==='included'?m.included:currentFilter==='excluded'?m.excluded:m.all;
+  const sorted = [...rows].sort((a,b)=> b.aging - a.aging);
+  document.getElementById('deals-body').innerHTML = sorted.map(d => `
+    <tr>
+      <td class="${d.anomaly?'muted-name':''}">${d.name}</td>
+      <td><span class="atag ${d.type==='newbusiness'?'g':'a'}">${d.segment}</span></td>
+      <td>${resultBadge(d.stage)}</td>
+      <td>${fmtDate(d.created)}</td>
+      <td>${fmtDate(d.closed)}</td>
+      <td class="aging-cell">${Math.round(d.aging)}d</td>
+      <td>${d.anomaly ? '<span class="atag warn">Excluido</span>' : '<span class="atag g" style="background:rgba(255,255,255,.06); color:var(--text-soft); border-color:rgba(255,255,255,.12)">En promedio</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAll(m){
+  renderKPIs(m);
+  renderDelta(m);
+  renderTabs(m);
+  renderTable(m);
+}
+
+let currentDeals2026 = buildDeals(DEFAULT_DATA_2026, 2026);
+let currentFilter2026 = 'included';
+
+function renderTabs2026(m){
+  const tabs = document.getElementById('tabs-2026');
+  tabs.innerHTML = `
+    <button class="tab" data-f="included">Incluidos (${m.included.length})</button>
+    <button class="tab" data-f="excluded">Excluidos — anomalías (${m.excluded.length})</button>
+    <button class="tab" data-f="all">Todos (${m.all.length})</button>
+  `;
+  tabs.querySelectorAll('.tab').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.f === currentFilter2026);
+    btn.onclick = () => { currentFilter2026 = btn.dataset.f; renderAll2026(computeMetrics(currentDeals2026)); };
+  });
+}
+
+function renderTable2026(m){
+  const rows = currentFilter2026==='included'?m.included:currentFilter2026==='excluded'?m.excluded:m.all;
+  const sorted = [...rows].sort((a,b)=> b.aging - a.aging);
+  document.getElementById('deals-body-2026').innerHTML = sorted.map(d => `
+    <tr>
+      <td class="${d.anomaly?'muted-name':''}">${d.name}</td>
+      <td><span class="atag ${d.type==='newbusiness'?'g':'a'}">${d.segment}</span></td>
+      <td>${resultBadge(d.stage)}</td>
+      <td>${fmtDate(d.created)}</td>
+      <td>${fmtDate(d.closed)}</td>
+      <td class="aging-cell">${Math.round(d.aging)}d</td>
+      <td>${d.anomaly ? '<span class="atag warn">Excluido</span>' : '<span class="atag g" style="background:rgba(255,255,255,.06); color:var(--text-soft); border-color:rgba(255,255,255,.12)">En promedio</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAll2026(m){
+  renderKPIs(m, '-2026');
+  renderDelta(m, '-2026');
+  renderTabs2026(m);
+  renderTable2026(m);
+}
+
+function renderAgingCompare(m2025, m2026){
+  const rows = [
+    {label:'New Client', a25:m2025.newAvg, n25:m2025.newCount, a26:m2026.newAvg, n26:m2026.newCount, color:'rgb(var(--primary))'},
+    {label:'Expansion', a25:m2025.expAvg, n25:m2025.expCount, a26:m2026.expAvg, n26:m2026.expCount, color:'rgb(var(--secondary))'}
+  ];
+  const maxVal = Math.max(...rows.flatMap(r => [r.a25, r.a26]));
+  document.getElementById('aging-compare-rows').innerHTML = rows.map(r => {
+    const delta = r.a26 - r.a25;
+    const cls = delta < -2 ? 'down' : (delta > 2 ? 'up' : 'flat');
+    const arrow = delta < -2 ? '↓' : (delta > 2 ? '↑' : '→');
+    const pct25 = maxVal > 0 ? Math.max(4, Math.round((r.a25/maxVal)*100)) : 0;
+    const pct26 = maxVal > 0 ? Math.max(4, Math.round((r.a26/maxVal)*100)) : 0;
+    return `
+      <div class="stage-row">
+        <div class="stage-row-head">
+          <span class="name">${r.label}</span>
+          <span class="delta ${cls}">${arrow} ${Math.abs(Math.round(delta))}d</span>
+        </div>
+        <div class="stage-bar-line">
+          <span class="yr">2025</span>
+          <div class="stage-bar-wrap"><div class="stage-bar" style="width:${pct25}%; background:rgba(255,255,255,.35)"></div></div>
+          <span class="val">${Math.round(r.a25)}d <span style="color:var(--text-muted); font-weight:500;">(n=${r.n25})</span></span>
+        </div>
+        <div class="stage-bar-line">
+          <span class="yr">2026</span>
+          <div class="stage-bar-wrap"><div class="stage-bar" style="width:${pct26}%; background:${r.color}"></div></div>
+          <span class="val">${Math.round(r.a26)}d <span style="color:var(--text-muted); font-weight:500;">(n=${r.n26})</span></span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+const LAST_UPDATED_LABEL = '13 ago 2026';
+
+async function init(){
+  document.getElementById('status-text').innerHTML = `Última actualización · <b>${LAST_UPDATED_LABEL}</b>`;
+  renderAll(computeMetrics(currentDeals));
+  renderAll2026(computeMetrics(currentDeals2026));
+  renderAgingCompare(computeMetrics(currentDeals), computeMetrics(currentDeals2026));
+  renderWonLostBreakdown('won-lost-2025', wonLostGroups(currentDeals));
+  renderWonLostBreakdown('won-lost-2026', wonLostGroups(currentDeals2026));
+  renderStageSegToggle();
+  renderStageRows();
+  renderZombieGroupToggle();
+  renderThresholdButtons();
+  renderActivity();
+  setupCardToggles();
+  renderWinRate();
+  renderOverdue();
+  renderMeetingWeeks();
+  renderMeetingOwners();
+  renderBookingsMonths();
+  renderPipelineMonths();
+  renderCreatedYearCompare();
+  renderPipelineOrigen();
+  renderWeightedPipeline();
+  renderActivityRankingAndOwnerCounts();
+  renderFunnel();
+  renderLeads();
+  renderLeadToDeal();
+}
+
+init();
+</script>
+</body>
+</html>
